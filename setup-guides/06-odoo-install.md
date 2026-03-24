@@ -381,6 +381,79 @@ Backup script configured and tested
 
 Odoo service running: sudo systemctl status odoo
 
+## Step 14: Accounting Module Setup
+
+This section covers the installation and configuration of the Accounting module for the accountant.
+
+### Install Accounting Module
+
+1. In Odoo, go to Apps
+2. Search for Accounting
+3. Click Install
+
+### Configure Company Settings
+
+1. Go to Settings → Companies
+2. Complete:
+   - Company Name
+   - Address
+   - Country: Cyprus
+   - Currency: EUR
+
+### Set Up Chart of Accounts
+
+1. Open Accounting module
+2. Choose chart template:
+   - Cyprus or Generic EU Chart of Accounts
+3. Odoo will automatically create:
+   - Accounts (Assets, Liabilities, Income, Expenses)
+   - Taxes (VAT 19%, VAT 9%, VAT 0%)
+
+### Configure Taxes
+
+1. Go to Accounting → Configuration → Taxes
+2. Verify or create:
+   - VAT 19% (standard rate for Cyprus)
+   - VAT 9% (reduced rate for certain goods)
+   - VAT 0% (exports)
+
+### Create Bank Account
+
+1. Go to Accounting → Configuration → Bank Accounts
+2. Add:
+   - Bank name
+   - IBAN
+   - Account holder (company name)
+
+### Create Accountant User
+
+1. Go to Settings → Users → Create
+2. Fill details:
+   - Name
+   - Email
+3. Access Rights:
+   - Set Accounting role to Advisor or Manager
+4. Enable 2FA for this user
+
+### Create Invoice (Test)
+
+1. Go to Accounting → Customers → Invoices
+2. Click Create
+3. Add:
+   - Customer
+   - Product/Service
+   - Quantity
+   - Tax (VAT 19%)
+4. Click Confirm
+5. Click Post
+
+### View Reports
+
+Accountant can access:
+- Accounting → Reporting → Profit & Loss
+- Accounting → Reporting → Balance Sheet
+- Accounting → Reporting → VAT Report
+
 Common Issues & Solutions
 Issue	Solution
 Odoo won't start	Check logs: sudo tail -f /var/log/odoo/odoo.log
