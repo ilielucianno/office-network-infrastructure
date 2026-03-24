@@ -163,6 +163,7 @@ Clients → Shows connected devices and their IPs
 
 Check Switch Port for AP:
 bash
+
 # On MikroTik switch
 /interface bridge port print where interface=ether10
 /interface bridge vlan print where vlan-ids=10,20
@@ -173,3 +174,14 @@ Reference
 UniFi Network Controller Documentation
 
 Ubiquiti VLAN Configuration Guide
+## Step 3.5: Enable Client Isolation on Support WiFi
+
+For additional security, enable client isolation on the Support network:
+
+1. In UniFi Controller, go to **Settings → WiFi**
+2. Edit the **Company-Support** SSID
+3. Click **Advanced**
+4. Enable **Client Device Isolation**
+5. Save
+
+**What this does:** Laptops on Support WiFi cannot see each other. Even if one device is compromised, it cannot attack other devices on the same network.
