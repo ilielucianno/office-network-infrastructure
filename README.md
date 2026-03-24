@@ -30,56 +30,36 @@ All components were purchased with official invoices (VAT included) from supplie
 ---
 
 ## Network Architecture
-Internet
-│
-▼
-[ MikroTik Router ]
-│
-▼
-[ MikroTik Switch ]
-│
-┌────┬────────┬────────┬────────┐
-▼ ▼ ▼ ▼ ▼
-HR Support Server WiFi VPN
-VLAN10 VLAN20 VLAN30 SSIDs Users
 
-text
+Internet → MikroTik Router → MikroTik Switch → HR / Support / Server / WiFi / VPN
 
----
-
-## VLAN Segmentation
-
-| VLAN | Name | Subnet | Purpose |
-|------|------|--------|---------|
-| 10 | HR | 192.168.10.0/24 | HR workstations, printer |
-| 20 | Support | 192.168.20.0/24 | Support laptops (no access to HR/Server) |
-| 30 | Server | 192.168.30.0/24 | Odoo HR system, database |
+- VLAN 10: HR (192.168.10.0/24)
+- VLAN 20: Support (192.168.20.0/24)
+- VLAN 30: Server (192.168.30.0/24)
 
 ---
 
 ## Firewall Rules
 
-| Rule | Action |
-|------|--------|
-| HR → Server | ✅ ALLOWED |
-| HR → Support | ❌ DENIED |
-| Support → HR | ❌ DENIED |
-| Support → Server | ❌ DENIED |
-| VPN → Server | ✅ ALLOWED |
-| VPN → HR | ✅ ALLOWED |
+- HR → Server: ALLOWED
+- HR → Support: DENIED
+- Support → HR: DENIED
+- Support → Server: DENIED
+- VPN → Server: ALLOWED
+- VPN → HR: ALLOWED
 
 ---
 
 ## Technologies Used
 
-- **Routing & Firewall:** MikroTik RouterOS (VLAN, firewall, NAT)
-- **Switching:** MikroTik SwitchOS (VLAN trunking)
-- **VPN:** WireGuard
-- **Server OS:** Ubuntu Server 22.04 LTS
-- **Database:** MariaDB
-- **HR System:** Odoo (self-hosted)
-- **Security:** UFW, Fail2Ban, 2FA (Google Authenticator)
-- **Backup:** Automated cron jobs + MySQL dumps
+- Routing & Firewall: MikroTik RouterOS (VLAN, firewall, NAT)
+- Switching: MikroTik SwitchOS (VLAN trunking)
+- VPN: WireGuard
+- Server OS: Ubuntu Server 22.04 LTS
+- Database: MariaDB
+- HR System: Odoo (self-hosted)
+- Security: UFW, Fail2Ban, 2FA (Google Authenticator)
+- Backup: Automated cron jobs + MySQL dumps
 
 ---
 
@@ -118,7 +98,7 @@ All configuration files are available in the `configs/` folder:
 - Support team cannot access HR data or server
 
 ### 2. VPN-Only Server Access
-- Odoo server is **not exposed to the internet**
+- Odoo server is not exposed to the internet
 - Accessible only via WireGuard VPN or from HR VLAN
 
 ### 3. 2FA for HR Users
@@ -134,10 +114,10 @@ All configuration files are available in the `configs/` folder:
 
 ## Lessons Learned
 
-- **VLAN filtering on MikroTik requires bridge VLAN filtering enabled** – I initially missed this and spent hours troubleshooting.
-- **WireGuard setup is simple but key management must be organized** – I created a spreadsheet for client keys.
-- **Odoo permissions are granular** – I created two roles: HR Manager (full access) and HR Viewer (no salary data).
-- **2FA in Odoo must be enabled per user** – Not a global setting, so I had to configure each user manually.
+- VLAN filtering on MikroTik requires bridge VLAN filtering enabled – I initially missed this and spent hours troubleshooting.
+- WireGuard setup is simple but key management must be organized – I created a spreadsheet for client keys.
+- Odoo permissions are granular – I created two roles: HR Manager (full access) and HR Viewer (no salary data).
+- 2FA in Odoo must be enabled per user – Not a global setting, so I had to configure each user manually.
 
 ---
 
@@ -155,7 +135,7 @@ All configuration files are available in the `configs/` folder:
 **Ilie Lucian**  
 Technical Department Manager with 10+ years in IT infrastructure, networking, and hardware. Currently pursuing certifications in cybersecurity (TryHackMe SEC1, Security+, Network+).
 
-📁 GitHub Portfolio: [office-network-infrastructure](https://github.com/illelucianno/office-network-infrastructure)
+GitHub Portfolio: https://github.com/illelucianno/office-network-infrastructure
 
 ---
 
