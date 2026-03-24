@@ -13,6 +13,8 @@ This project documents the complete setup of a secure office network for a small
 - **Automated backups** — daily database backups, 30-day retention
 - **Security hardening** — UFW, Fail2Ban, Snort IDS
 - **Operational security** — 2FA on Zoho, withdrawal delays, manual approvals
+- **Odoo Accounting** — invoices, payments, VAT reports for Cyprus
+- **Separate WiFi** — HR + Accountant on VLAN 10, Support on VLAN 20 with client isolation
 
 ---
 
