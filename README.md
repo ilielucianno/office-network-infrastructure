@@ -33,19 +33,21 @@ All components were purchased with official invoices (VAT included) from supplie
 Internet
 │
 ▼
-[ MikroTik Router ] (VLAN tagging, Firewall, VPN)
+[ MikroTik Router ]
 │
 ▼
-[ MikroTik Switch ] (VLAN-aware)
+[ MikroTik Switch ]
 │
 ┌────┬────────┬────────┬────────┐
 ▼ ▼ ▼ ▼ ▼
-HR Support Server WiFi (VPN Users)
-VLAN10 VLAN20 VLAN30 SSIDs WireGuard
+HR Support Server WiFi VPN
+VLAN10 VLAN20 VLAN30 SSIDs Users
 
 text
 
-### VLAN Segmentation
+---
+
+## VLAN Segmentation
 
 | VLAN | Name | Subnet | Purpose |
 |------|------|--------|---------|
@@ -53,14 +55,18 @@ text
 | 20 | Support | 192.168.20.0/24 | Support laptops (no access to HR/Server) |
 | 30 | Server | 192.168.30.0/24 | Odoo HR system, database |
 
-### Firewall Rules
+---
 
-- HR → Server: **ALLOWED**
-- HR → Support: **DENIED**
-- Support → HR: **DENIED**
-- Support → Server: **DENIED**
-- VPN (WireGuard) → Server: **ALLOWED**
-- VPN → HR: **ALLOWED** (for admin access)
+## Firewall Rules
+
+| Rule | Action |
+|------|--------|
+| HR → Server | ✅ ALLOWED |
+| HR → Support | ❌ DENIED |
+| Support → HR | ❌ DENIED |
+| Support → Server | ❌ DENIED |
+| VPN → Server | ✅ ALLOWED |
+| VPN → HR | ✅ ALLOWED |
 
 ---
 
@@ -148,6 +154,8 @@ All configuration files are available in the `configs/` folder:
 
 **Ilie Lucian**  
 Technical Department Manager with 10+ years in IT infrastructure, networking, and hardware. Currently pursuing certifications in cybersecurity (TryHackMe SEC1, Security+, Network+).
+
+📁 GitHub Portfolio: [office-network-infrastructure](https://github.com/illelucianno/office-network-infrastructure)
 
 ---
 
