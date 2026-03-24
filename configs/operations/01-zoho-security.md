@@ -22,7 +22,7 @@ Zoho is our central platform for:
 
 | Setting | Value |
 |---------|-------|
-| Status | ✅ Enabled for all users |
+| Status | Enabled for all users |
 | Method | Google Authenticator / Microsoft Authenticator |
 | Backup codes | Saved for each user (stored securely) |
 
@@ -37,7 +37,7 @@ Zoho is our central platform for:
 
 | Setting | Value |
 |---------|-------|
-| Status | ✅ Enabled |
+| Status | Enabled |
 | Trusted devices | Remembers device + IP for 30 days |
 | New IP detection | Requires 2FA again |
 
@@ -52,15 +52,15 @@ Zoho is our central platform for:
 
 | Role | Access Level | What They Can Do |
 |------|--------------|------------------|
-| **Owner** (Ilie, Owner1, Owner 2) | Full access | Approve withdrawals, view all data, manage users |
+| **Owner** | Full access | Approve withdrawals, view all data, manage users |
 | **Support Agents** | Limited | View player accounts, add free bonuses, activate coupons |
 | **Finance** | Restricted | Cannot withdraw money, cannot see real money balances |
 
 **What Support CANNOT do:**
-- ❌ Approve withdrawals
-- ❌ See real money transactions
-- ❌ Change user permissions
-- ❌ Access financial reports
+- Approve withdrawals
+- See real money transactions
+- Change user permissions
+- Access financial reports
 
 ---
 
@@ -102,7 +102,7 @@ Even if an attacker gains access to Zoho, they cannot withdraw money immediately
 3. We saw the suspicious withdrawal and cancelled it
 4. Changed password, enforced 2FA reset
 
-**Lesson:** Multiple layers of protection (delays, manual approval, daily review) stopped the attack.
+**Lesson:** Multiple layers of protection (delays, manual review, daily review) stopped the attack.
 
 ---
 
@@ -121,7 +121,7 @@ Even if an attacker gains access to Zoho, they cannot withdraw money immediately
 
 ### If You Suspect an Account Is Compromised
 
-1. **Immediately:** Tell an owner (Ilie, Owner 1, Owner 2)
+1. **Immediately:** Tell an owner (Owner 1 France or Owner 2 Israel)
 2. **Change password** in Zoho
 3. **Reset 2FA** for that user
 4. **Review recent activity** for suspicious actions
