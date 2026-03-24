@@ -6,49 +6,54 @@ This document outlines the security policies implemented in the office network i
 
 ## Overview
 
-The security architecture follows the **principle of least privilege** and **network segmentation**. No system is accessible unless explicitly required.
+The security architecture follows the principle of least privilege and network segmentation. No system is accessible unless explicitly required.
 
 ---
 
 ## 1. Network Segmentation (VLAN Isolation)
 
-| VLAN | Name | Access Rules |
-|------|------|--------------|
-| 10 | HR | Can access Server (VLAN 30). Cannot access Support (VLAN 20). |
-| 20 | Support | Internet only. Cannot access HR or Server. |
-| 30 | Server | Accessible only from HR VLAN and VPN. Not exposed to internet. |
+| VLAN | Name | Subnet | Access Rules |
+|------|------|--------|--------------|
+| 10 | HR | 192.168.10.0/24 | Can access Server (VLAN 30). Cannot access Support (VLAN 20). |
+| 20 | Support | 192.168.20.0/24 | Internet only. Cannot access HR or Server. |
+| 30 | Server | 192.168.30.0/24 | Accessible only from HR VLAN and VPN. Not exposed to internet. |
 
 **Why:** If an attacker compromises a Support laptop, they cannot reach HR data or the server.
 
 ---
 
-## 2. Firewall Rules
+## 2. Wireless Security
+
+| SSID | VLAN | Users | Isolation |
+|------|------|-------|-----------|
+| Company-HR | 10 | HR staff, Accountant | No isolation (trusted users) |
+| Company-Support | 20 | Support agents | Client Device Isolation enabled |
+
+**Client Device Isolation:** Laptops on Support WiFi cannot communicate with each other. This prevents lateral movement if one device is compromised.
+
+---
+
+## 3. Firewall Rules
 
 ### MikroTik RouterOS
-Block all inter-VLAN traffic by default
-/ip firewall filter add chain=forward action=drop
 
-Allow specific flows
-add chain=forward action=accept src-address=192.168.10.0/24 dst-address=192.168.30.0/24 # HR → Server
-add chain=forward action=accept src-address=10.10.10.0/24 dst-address=192.168.30.0/24 # VPN → Server
-add chain=forward action=accept src-address=10.10.10.0/24 dst-address=192.168.10.0/24 # VPN → HR
-add chain=forward action=accept out-interface=ether1 # Internet access
-
-text
+Block all inter-VLAN traffic by default, then allow specific flows:
+- HR → Server: ALLOWED
+- VPN → Server: ALLOWED
+- VPN → HR: ALLOWED
+- Internet access: ALLOWED for all
 
 ### Server Firewall (UFW)
-Allow only from HR VLAN and VPN subnet
-sudo ufw allow from 192.168.10.0/24
-sudo ufw allow from 10.10.10.0/24
-sudo ufw enable
 
-text
+Allow only from HR VLAN and VPN subnet:
+- SSH: only from 192.168.10.0/24 and 10.10.10.0/24
+- Odoo (port 8069): only from 192.168.10.0/24 and 10.10.10.0/24
 
 **Why:** Server is invisible from the internet. Only internal and VPN traffic reaches it.
 
 ---
 
-## 3. VPN Security (WireGuard)
+## 4. VPN Security (WireGuard)
 
 | Setting | Value |
 |---------|-------|
@@ -61,59 +66,33 @@ text
 - Each remote user gets a unique key pair
 - Keys are revoked when an employee leaves
 - No password authentication – keys only
-
-**Why:** WireGuard is lightweight, modern, and more secure than legacy VPN protocols.
+- Each client has a unique IP in 10.10.10.0/24 for tracking
 
 ---
 
-## 4. Server Security Hardening
+## 5. Server Security Hardening
 
 ### Operating System (Ubuntu Server 22.04)
 
 | Measure | Implementation |
 |---------|----------------|
-| Non-root user | All operations done via `odoo` user |
-| SSH | Password authentication disabled, key-based only |
-| Firewall | UFW with strict allow lists |
-| Automatic updates | `unattended-upgrades` enabled |
+| Non-root user | All operations done via odoo user |
+| SSH | Key-based authentication only |
+| Firewall | UFW with strict allow lists (HR and VPN only) |
+| Automatic updates | unattended-upgrades enabled |
 | Fail2Ban | Blocks IPs after 3 failed SSH attempts |
+| Snort IDS | Intrusion detection system monitoring traffic |
 
-### Fail2Ban Configuration
+---
 
-```bash
-# /etc/fail2ban/jail.local
-[sshd]
-enabled = true
-maxretry = 3
-bantime = 3600
-Why: Automated attacks are common. Fail2Ban reduces brute-force risk.
+## 6. Odoo Security
 
-5. HR System Security (Odoo)
-Measure	Implementation
-2FA (Two-Factor Authentication)	Google Authenticator for all HR users
-Password policy	Minimum 12 characters, complexity enforced
-Session timeout	15 minutes of inactivity
-User roles	HR Manager (full access), HR Viewer (restricted)
-2FA Setup Steps
-Enable Developer Mode in Odoo
-
-Navigate to Settings → Users → Select user
-
-Check "Two-Factor Authentication"
-
-User scans QR code with authenticator app on first login
-
-Why: 2FA prevents account takeover even if passwords are compromised.
-
-6. Access Control Matrix
-
-| User Type | HR VLAN | Support VLAN | Server | Odoo | Internet |
-|-----------|---------|--------------|--------|------|----------|
-| HR Staff | ✅ | ❌ | ✅ | ✅ | ✅ |
-| Accountant | ✅ | ❌ | ✅ | ✅ (Accounting) | ✅ |
-| Support Staff | ❌ | ✅ | ❌ | ❌ | ✅ |
-| Remote Agents (VPN) | ❌ | ❌ | ✅ (Odoo only) | ✅ | via own ISP |
-| Admin (VPN) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Measure | Implementation |
+|---------|----------------|
+| 2FA (Two-Factor Authentication) | Google Authenticator for all users |
+| Password policy | Minimum 12 characters, complexity enforced |
+| Session timeout | 15 minutes of inactivity |
+| User roles | HR Manager, Accountant, Admin |
 
 ### Odoo Roles
 
@@ -123,72 +102,63 @@ Why: 2FA prevents account takeover even if passwords are compromised.
 | Accountant | Invoices, payments, VAT reports, bank accounts |
 | Admin | Full access, user management |
 
-7. Backup Policy
-Backup Type	Frequency	Location	Retention
-Database (MariaDB)	Daily at 2:00 AM	External HDD	30 days
-Odoo filestore	Weekly	External HDD	4 weeks
-Full system backup	Monthly	External HDD + Cloud	3 months
-Backup Script
-bash
-#!/bin/bash
-# /root/backup.sh
-mysqldump -u root -p'password' odoo_db > /backup/odoo_$(date +%Y%m%d).sql
-find /backup -name "odoo_*.sql" -mtime +30 -delete
-Why: Data loss recovery is critical for HR records.
+---
 
-8. Incident Response Plan
-Phishing / Credential Theft (like the crypto incident)
-Immediate: Change passwords, revoke sessions
+## 7. Access Control Matrix
 
-Containment: Isolate affected system (disable account)
+| User Type | HR VLAN | Support VLAN | Server | Odoo | Internet |
+|-----------|---------|--------------|--------|------|----------|
+| HR Staff | YES | NO | YES | YES | YES |
+| Accountant | YES | NO | YES | YES (Accounting) | YES |
+| Support Staff | NO | YES | NO | NO | YES |
+| Remote Agents (VPN) | NO | NO | YES (Odoo only) | YES | via own ISP |
+| Admin (VPN) | YES | YES | YES | YES | YES |
 
-Analysis: Review logs, determine scope
+---
 
-Recovery: Restore from clean backup if needed
+## 8. Backup Policy
 
-Post-incident: Update training, review policies
+| Backup Type | Frequency | Location | Retention |
+|-------------|-----------|----------|-----------|
+| Database (MariaDB) | Daily at 2:00 AM | External HDD | 30 days |
+| Odoo filestore | Weekly | External HDD | 4 weeks |
+| Router/Switch config | After changes | Local storage | Permanent |
 
-Suspicious Network Activity
-Check firewall logs on MikroTik
+**Why:** Data loss recovery is critical for HR records and accounting data.
 
-Review VPN connection logs
+---
 
-Check server auth logs (/var/log/auth.log)
+## 9. Incident Response Plan
 
-Block source IP if malicious
+### Phishing / Credential Theft
 
-9. Security Checklist (Implemented)
-VLAN segmentation between departments
+1. Immediate: Change passwords, revoke sessions
+2. Containment: Isolate affected system (disable account)
+3. Analysis: Review logs, determine scope
+4. Recovery: Restore from clean backup if needed
+5. Post-incident: Update training, review policies
 
-Firewall rules blocking lateral movement
+### Withdrawal Protection
 
-Server not exposed to internet
+- Withdrawals have 7-21 day delay
+- Daily review of withdrawal list
+- Manual approval by owners only
+- Suspicious withdrawals cancelled immediately
 
-WireGuard VPN with key-based auth
+---
 
-2FA on Odoo HR system
+## 10. Security Checklist (Implemented)
 
-UFW on server with strict allow rules
-
-Fail2Ban on server
-
-Automatic security updates
-
-Daily database backups
-
-Password policy enforced
-
-10. Future Security Improvements
-Priority	Improvement	Reason
-High	Centralized logging (ELK or Wazuh)	Better visibility into security events
-Medium	Network monitoring (Zabbix)	Detect anomalies
-Medium	Cloud backup (AWS S3 / Google Drive)	Offsite redundancy
-Low	SIEM integration	Compliance and advanced detection
-References
-MikroTik Firewall Best Practices
-
-WireGuard Security
-
-Ubuntu Security Hardening
-
-Odoo Security Documentation
+- [x] VLAN segmentation between departments
+- [x] Firewall rules blocking lateral movement
+- [x] Server not exposed to internet
+- [x] WireGuard VPN with key-based auth
+- [x] 2FA on Odoo HR system
+- [x] 2FA on Zoho CRM
+- [x] UFW on server with strict allow rules
+- [x] Fail2Ban on server
+- [x] Snort IDS monitoring
+- [x] Automatic security updates
+- [x] Daily database backups
+- [x] WiFi client isolation on Support network
+- [x] Accountant role with limited access
