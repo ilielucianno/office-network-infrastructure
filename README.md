@@ -112,6 +112,17 @@ All configuration files are available in the `configs/` folder:
 
 ---
 
+## Operations & Security Policies
+
+Operational procedures and security policies:
+
+1. [Zoho Security](operations/01-zoho-security.md)
+2. [Incident Response Runbook](operations/02-incident-runbook.md)
+3. [Backup Procedures](operations/03-backup-procedures.md)
+4. [Accounts & Access Policy](operations/04-accounts-policy.md)
+
+---   
+
 ## Lessons Learned
 
 - VLAN filtering on MikroTik requires bridge VLAN filtering enabled – I initially missed this and spent hours troubleshooting.
