@@ -1,8 +1,9 @@
 # Office Network Infrastructure with VLAN Segmentation & VPN Access
 
 ## Overview
+This project documents the complete setup of a secure office network for a small company (3 HR offices + 10-15 remote support agents). The infrastructure is built on a budget of under €1000 and implements enterprise-grade security practices including VLAN isolation, firewall rules, VPN access, and a self-hosted HR management system.
 
-This project documents the complete setup of a secure office network for a small company ( 3 HR offices + 10-15 remote support agents). The infrastructure is built on a budget of under €1000 and implements enterprise-grade security practices including VLAN isolation, firewall rules, VPN access, and a self-hosted HR management system.
+**The business operates online casinos (branded separately, no connection to this infrastructure).** All financial operations (withdrawals, bonuses) are protected by additional layers: 2FA on Zoho, IP verification, 7-21 day withdrawal delays, and manual approval by owners.
 
 ## Key features:
 - **Network segmentation** — HR, Support, Server completely isolated with VLANs
