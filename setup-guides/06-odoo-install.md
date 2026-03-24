@@ -192,6 +192,7 @@ End Date	Date	Termination date
 Gross Salary	Float	Monthly salary
 IBAN	Text	Bank account
 Emergency Contact	Text	Contact person
+
 Step 9: Create User Roles
 Role: HR Manager
 Settings → Users → Create
@@ -214,6 +215,77 @@ Access Rights:
 HR: User (read-only)
 
 Salary field: hidden (configure later)
+
+## Step 9.5: Accounting Module Setup
+
+### Install Accounting Module
+
+1. In Odoo, go to **Apps**
+2. Search for **Accounting**
+3. Click **Install**
+
+### Configure Company Settings
+
+1. Go to **Settings → Companies**
+2. Complete:
+   - Company Name
+   - Address
+   - Country: **Cyprus**
+   - Currency: **EUR**
+
+### Set Up Chart of Accounts
+
+1. Open **Accounting** module
+2. Choose chart template:
+   - **Cyprus** or **Generic EU Chart of Accounts**
+3. Odoo will automatically create:
+   - Accounts (Assets, Liabilities, Income, Expenses)
+   - Taxes (VAT 19%, VAT 9%, VAT 0%)
+
+### Configure Taxes
+
+1. Go to **Accounting → Configuration → Taxes**
+2. Verify or create:
+   - **VAT 19%** (standard rate for Cyprus)
+   - **VAT 9%** (reduced rate for certain goods)
+   - **VAT 0%** (exports)
+
+### Create Bank Account
+
+1. Go to **Accounting → Configuration → Bank Accounts**
+2. Add:
+   - Bank name
+   - IBAN
+   - Account holder (company name)
+
+### Create Accountant User
+
+1. Go to **Settings → Users → Create**
+2. Fill details:
+   - Name
+   - Email
+3. **Access Rights:**
+   - Set **Accounting** role to **Advisor** or **Manager**
+4. **Enable 2FA** for this user
+
+### Create Invoice (Test)
+
+1. Go to **Accounting → Customers → Invoices**
+2. Click **Create**
+3. Add:
+   - Customer
+   - Product/Service
+   - Quantity
+   - Tax (VAT 19%)
+4. Click **Confirm**
+5. Click **Post**
+
+### View Reports
+
+Accountant can access:
+- **Accounting → Reporting → Profit & Loss**
+- **Accounting → Reporting → Balance Sheet**
+- **Accounting → Reporting → VAT Report**
 
 Step 10: Configure 2FA (Two-Factor Authentication)
 For each user:
