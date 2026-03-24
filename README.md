@@ -93,22 +93,63 @@ All configuration files are available in the `configs/` folder:
 
 ## Key Security Implementations
 
-### 1. Network Isolation
-- VLANs prevent unauthorized lateral movement
-- Support team cannot access HR data or server
+### Network & Infrastructure
 
-### 2. VPN-Only Server Access
-- Odoo server is not exposed to the internet
-- Accessible only via WireGuard VPN or from HR VLAN
+| Measure | Implementation |
+|---------|----------------|
+| Network Segmentation | VLANs separate HR, Support, Server — no lateral movement without explicit rules |
+| Firewall Rules | MikroTik firewall blocks all inter-VLAN traffic except HR → Server and VPN → internal |
+| VPN-Only Server Access | Odoo server is not exposed to internet — accessible only via WireGuard VPN or HR VLAN |
+| WireGuard VPN | Key-based authentication, unique keys per user, IP tracking |
+| Server Hardening | UFW firewall (allow only HR and VPN subnets), automatic security updates |
+| Fail2Ban | Blocks brute-force attacks on SSH and Odoo |
+| Intrusion Detection | Snort IDS monitors traffic and logs alerts |
+| Backup | Daily automated database backups, 30-day retention |
 
-### 3. 2FA for HR Users
-- Google Authenticator required for all HR accounts
+### Operational & Access Control
 
-### 4. Automated Backups
-- Daily database backups to external drive
+| Measure | Implementation |
+|---------|----------------|
+| Zoho 2FA | Two-factor authentication for all Zoho accounts |
+| IP-Based Verification | Zoho remembers trusted devices/IPs for 30 days — new IP triggers 2FA |
+| User Roles | Owners (full access), Support (limited, no withdrawals), HR (server access only) |
+| Withdrawal Protection | 7-21 day delay, daily review, manual approval by owners only |
+| Password Policy | 12+ characters, unique, changed quarterly |
+| WireGuard Key Management | Unique keys per user, spreadsheet tracking, immediate revocation on departure |
+| Incident Response | Documented runbook for crypto breaches, suspicious logins, withdrawals |
+| Offboarding Process | All accounts disabled immediately when employee leaves |
+| Data Breach Monitoring | Google alerts for leaked credentials — immediate password reset |
 
-### 5. Fail2Ban
-- Blocks brute-force attacks on SSH and Odoo
+### Security Architecture Overview
+
+**External Layer (Internet):**
+- Casino websites (Malta/Curacao licenses) — no connection to company infrastructure
+- Zoho CRM (cloud) — protected by 2FA and IP verification
+
+**Internal Layer (Your Infrastructure):**
+- MikroTik Router — firewall, VPN server, VLAN routing
+- MikroTik Switch — VLAN trunking, port isolation
+- Three isolated networks:
+  - VLAN 10 (HR) — can access server only
+  - VLAN 20 (Support) — internet only, no access to HR or server
+  - VLAN 30 (Server) — Odoo HR system, accessible only from HR and VPN
+
+**Remote Access:**
+- WireGuard VPN — key-based authentication
+- Remote agents can only access Odoo server, nothing else
+
+### Why This Architecture Works
+
+| Threat | How We Block It |
+|--------|-----------------|
+| Attacker finds casino website | No link to company infrastructure |
+| Attacker compromises Zoho password | 2FA + IP verification blocks login |
+| Attacker gets into Zoho | Support roles cannot withdraw money |
+| Attacker requests withdrawal | 7-21 day delay + daily review + manual approval |
+| Attacker compromises support laptop | VLAN isolation — cannot reach HR or Server |
+| Attacker tries to brute-force server | Fail2Ban blocks after 3 attempts |
+| Attacker steals physical hardware | Server is locked, data is encrypted, backups offsite |
+| Phishing attack (like crypto incident) | Quick response runbook, funds recovery procedure |
 
 ---
 
@@ -134,17 +175,49 @@ Operational procedures and security policies:
 
 ## Future Improvements
 
-- Migrate to cloud backup (Google Drive / AWS S3)
-- Implement SIEM logging (ELK stack or Wazuh)
-- Add network monitoring (Zabbix or PRTG)
-- Deploy a second server for high availability
+I am still learning, so I don't know exactly what comes next. Here's what I plan to explore:
+
+### What I Know I Want to Learn
+- **Complete my certifications** — Security+ and Network+ are my priority right now
+- **Understand monitoring tools** — I've heard about tools that show network activity, but I need to learn them first
+- **Add offsite backup** — Right now backups are local. I want to add cloud backup (Google Drive) for extra safety
+
+### How This Will Grow
+As I learn more, I will add new features to this network and document them here. This repository will evolve with my knowledge.
+
+**This is a learning project. I build what I learn.**
 
 ---
 
-## Author
+## About Author
 
 **Ilie Lucian**  
 Technical Department Manager with 10+ years in IT infrastructure, networking, and hardware. Currently pursuing certifications in cybersecurity (TryHackMe SEC1, Security+, Network+).
+
+## Current Learning Path
+
+I am actively building my cybersecurity knowledge while working full-time. This project is part of my hands-on learning journey.
+
+### Completed
+- ✅ TryHackMe Pre Security
+- ✅ TryHackMe SEC0
+- ✅ This project — full network infrastructure with VLANs, VPN, IDS, and operational security
+
+### In Progress
+- 🔄 TryHackMe SEC1 — 70% completed (estimated completion: April 2026)
+- 🔄 Security+ (CompTIA) — started
+- 🔄 Network+ (CompTIA) — started
+
+### Next Steps (Next 6 Months)
+- Complete Security+ and Network+ certifications
+- Start Cloud Security (AWS / Azure fundamentals)
+- Document more operational procedures
+- Add monitoring with Wazuh / Grafana
+
+### Why I Built This
+I've been working in IT infrastructure for 10+ years, managing networks, hardware, and teams. Recently, I realized that what I was already doing (firewalls, VLANs, VPNs, incident response) has a name: **cybersecurity**. Now I'm formalizing my knowledge through certifications and documenting real projects to demonstrate my skills.
+
+**This repository is a living document of my cybersecurity journey.**
 
 GitHub Portfolio: https://github.com/illelucianno/office-network-infrastructure
 
