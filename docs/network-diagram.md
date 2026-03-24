@@ -5,22 +5,18 @@ This document describes the logical and physical network architecture of the off
 ---
 
 ## Physical Topology
-INTERNET (ISP)
-│
-▼
-[ MikroTik Router ] (ether1 = WAN, ether2-5 = LAN)
-│
-▼
-[ MikroTik Switch ] (port1 = trunk from router, ports 2-9 = access)
-│
-├──────┬──────────────┬──────────────┬──────────────┐
-▼ ▼ ▼ ▼ ▼
-HR HR HR Support Server
-PC1 PC2 Printer Laptops (DB + Odoo)
-(ports (ports (port 5) (ports 6-8) (port 9)
-2-4)
 
-text
+Internet → MikroTik Router (ether1 = WAN, ether2-5 = LAN) → MikroTik Switch (port1 = trunk from router, ports 2-9 = access)
+
+Switch Ports:
+- Port 2: HR PC1
+- Port 3: HR PC2
+- Port 4: HR PC3 (if present)
+- Port 5: HR Printer
+- Port 6: Support Laptop 1
+- Port 7: Support Laptop 2
+- Port 8: Support Laptop 3
+- Port 9: Server (DB + Odoo)
 
 ---
 
@@ -48,63 +44,28 @@ WiFi is provided by **Ubiquiti UniFi 6 Plus** connected to the switch.
 ## VPN Access (WireGuard)
 
 Remote users (12 support agents + admin) connect via WireGuard VPN:
-Remote Client (WireGuard)
-│
-▼
-Internet
-│
-▼
-[ MikroTik Router ] (WireGuard server on port 13231)
-│
-▼
-VPN Tunnel (10.10.10.0/24)
-│
-▼
-Server (192.168.30.10)
-│
-▼
-Odoo HR System (port 8069)
 
-text
+**Connection flow:**
+Remote Client (WireGuard) → Internet → MikroTik Router (WireGuard server on port 13231) → VPN Tunnel (10.10.10.0/24) → Server (192.168.30.10) → Odoo HR System (port 8069)
 
-**VPN Subnet:** `10.10.10.0/24`  
-**Server Address:** `10.10.10.1` (router)  
+**VPN Subnet:** `10.10.10.0/24`
+
+**Server Address:** `10.10.10.1` (router)
+
 **Client Addresses:** `10.10.10.2` to `10.10.10.254`
 
 ---
 
-## Firewall Rules (Traffic Flow)
-┌─────────────────────────────────────────────────────────────────┐
-│ INTERNET │
-│ │ │
-│ ▼ │
-│ [ MIKROTIK ROUTER ] │
-│ │ │
-│ ┌─────────────────────┼─────────────────────┐ │
-│ │ │ │ │
-│ ▼ ▼ ▼ │
-│ [VLAN 10 - HR] [VLAN 20 - Support] [VLAN 30 - Server] │
-│ 192.168.10.0/24 192.168.20.0/24 192.168.30.0/24 │
-│ │ │ │ │
-│ │ ┌──────────────────┘ │ │
-│ │ │ │ │
-│ ▼ ▼ ▼ │
-│ [HR] [Support] [Server] │
-│ │ │ │ │
-│ └──────────┬──────────┘ │ │
-│ │ │ │
-│ ▼ │ │
-│ [ALLOWED RULES] │ │
-│ │ │
-│ HR → Server: ✅ ALLOWED │ │
-│ HR → Support: ❌ DENIED │ │
-│ Support → HR: ❌ DENIED │ │
-│ Support → Server: ❌ DENIED │ │
-│ VPN → Server: ✅ ALLOWED │ │
-│ VPN → HR: ✅ ALLOWED │ │
-└─────────────────────────────────────────────────────────────────┘
+## Firewall Rules
 
-text
+| Rule | Action |
+|------|--------|
+| HR → Server | ✅ ALLOWED |
+| HR → Support | ❌ DENIED |
+| Support → HR | ❌ DENIED |
+| Support → Server | ❌ DENIED |
+| VPN → Server | ✅ ALLOWED |
+| VPN → HR | ✅ ALLOWED |
 
 ---
 
@@ -118,8 +79,7 @@ text
 | Router (VLAN 30) | 192.168.30.1 | vlan30-server |
 | Router (VPN) | 10.10.10.1 | wg0 |
 | Server | 192.168.30.10 (static) | eth0 |
-| HR PC1 | 192.168.10.x (DHCP) | - |
-| HR PC2 | 192.168.10.x (DHCP) | - |
+| HR PCs | 192.168.10.x (DHCP) | - |
 | HR Printer | 192.168.10.x (DHCP/reserved) | - |
 | Support Laptops | 192.168.20.x (DHCP) | - |
 | VPN Clients | 10.10.10.x (static per client) | - |
@@ -146,5 +106,3 @@ A visual diagram can be created using tools like:
 - **draw.io** – free online diagram tool
 - **Lucidchart** – professional diagrams
 - **Visio** – Microsoft's diagram software
-
-The diagram above (ASCII) represents the logical flow. For a visual version, export from any diagram tool and save to `assets/network-diagram.png`.
