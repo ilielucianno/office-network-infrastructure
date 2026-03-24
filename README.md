@@ -166,7 +166,7 @@ Operational procedures and security policies:
 2. [Incident Response Runbook](operations/02-incident-runbook.md)
 3. [Backup Procedures](operations/03-backup-procedures.md)
 4. [Accounts & Access Policy](operations/04-accounts-policy.md)
-
+   
 ---   
 
 ## Lessons Learned
