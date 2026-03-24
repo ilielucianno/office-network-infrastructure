@@ -8,7 +8,7 @@ This document defines who has access to what and how accounts are managed.
 
 | Role | Who | Access Level |
 |------|-----|--------------|
-| Owner | Ilie, David, Gabriel | Full access to everything |
+| Owner | Ilie, Owner1, Owner2 | Full access to everything |
 | HR | HR staff | Odoo employee data, contracts |
 | Accountant | Accountant | Odoo Accounting (invoices, payments, VAT reports) |
 | Support Agent | 10-15 agents | Zoho (limited), WiFi Support only |
