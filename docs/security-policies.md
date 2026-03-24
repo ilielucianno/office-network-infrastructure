@@ -87,3 +87,96 @@ enabled = true
 maxretry = 3
 bantime = 3600
 Why: Automated attacks are common. Fail2Ban reduces brute-force risk.
+
+5. HR System Security (Odoo)
+Measure	Implementation
+2FA (Two-Factor Authentication)	Google Authenticator for all HR users
+Password policy	Minimum 12 characters, complexity enforced
+Session timeout	15 minutes of inactivity
+User roles	HR Manager (full access), HR Viewer (restricted)
+2FA Setup Steps
+Enable Developer Mode in Odoo
+
+Navigate to Settings → Users → Select user
+
+Check "Two-Factor Authentication"
+
+User scans QR code with authenticator app on first login
+
+Why: 2FA prevents account takeover even if passwords are compromised.
+
+6. Access Control Matrix
+User Type	HR VLAN	Support VLAN	Server	Odoo	Internet
+HR Staff	✅	❌	✅	✅	✅
+Support Staff	❌	✅	❌	❌	✅
+Remote Agents (VPN)	❌	❌	✅ (Odoo only)	✅	via own ISP
+Admin (VPN)	✅	✅	✅	✅	✅
+7. Backup Policy
+Backup Type	Frequency	Location	Retention
+Database (MariaDB)	Daily at 2:00 AM	External HDD	30 days
+Odoo filestore	Weekly	External HDD	4 weeks
+Full system backup	Monthly	External HDD + Cloud	3 months
+Backup Script
+bash
+#!/bin/bash
+# /root/backup.sh
+mysqldump -u root -p'password' odoo_db > /backup/odoo_$(date +%Y%m%d).sql
+find /backup -name "odoo_*.sql" -mtime +30 -delete
+Why: Data loss recovery is critical for HR records.
+
+8. Incident Response Plan
+Phishing / Credential Theft (like the crypto incident)
+Immediate: Change passwords, revoke sessions
+
+Containment: Isolate affected system (disable account)
+
+Analysis: Review logs, determine scope
+
+Recovery: Restore from clean backup if needed
+
+Post-incident: Update training, review policies
+
+Suspicious Network Activity
+Check firewall logs on MikroTik
+
+Review VPN connection logs
+
+Check server auth logs (/var/log/auth.log)
+
+Block source IP if malicious
+
+9. Security Checklist (Implemented)
+VLAN segmentation between departments
+
+Firewall rules blocking lateral movement
+
+Server not exposed to internet
+
+WireGuard VPN with key-based auth
+
+2FA on Odoo HR system
+
+UFW on server with strict allow rules
+
+Fail2Ban on server
+
+Automatic security updates
+
+Daily database backups
+
+Password policy enforced
+
+10. Future Security Improvements
+Priority	Improvement	Reason
+High	Centralized logging (ELK or Wazuh)	Better visibility into security events
+Medium	Network monitoring (Zabbix)	Detect anomalies
+Medium	Cloud backup (AWS S3 / Google Drive)	Offsite redundancy
+Low	SIEM integration	Compliance and advanced detection
+References
+MikroTik Firewall Best Practices
+
+WireGuard Security
+
+Ubuntu Security Hardening
+
+Odoo Security Documentation
