@@ -91,11 +91,11 @@ This document describes step-by-step what to do when different types of security
 |------|--------|------|
 | 1 | Check server power LED | 1 minute |
 | 2 | Check network cable to switch | 1 minute |
-| 3 | Ping server: `ping 192.168.30.10` | 1 minute |
+| 3 | Ping server: ping 192.168.30.10 | 1 minute |
 | 4 | If no ping, connect monitor and keyboard directly | 5 minutes |
 | 5 | Check if server is frozen (reboot if needed) | 3 minutes |
-| 6 | After reboot, check Odoo service: `sudo systemctl status odoo` | 2 minutes |
-| 7 | Check logs: `sudo tail -f /var/log/odoo/odoo.log` | 2 minutes |
+| 6 | After reboot, check Odoo service: sudo systemctl status odoo | 2 minutes |
+| 7 | Check logs: sudo tail -f /var/log/odoo/odoo.log | 2 minutes |
 
 ---
 
@@ -134,11 +134,11 @@ This document describes step-by-step what to do when different types of security
 
 ## Contact List
 
-| Role | Name | Phone |
-|------|------|-------|
+| Role | Location | Phone |
+|------|----------|-------|
 | Owner / IT | Ilie | +357 95572559 |
-| Owner | Owner 2 (France) | [phone] |
-| Owner | Owner 2 (Israel) | [phone] |
+| Owner 1 | France | [phone] |
+| Owner 2 | Israel | [phone] |
 
 ---
 
