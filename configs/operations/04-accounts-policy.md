@@ -8,7 +8,7 @@ This document defines who has access to what and how accounts are managed.
 
 | Role | Who | Access Level |
 |------|-----|--------------|
-| Owner | Ilie, Owner1, Owner2 | Full access to everything |
+| Owner | Ilie, Owner 1 France, Owner 2 Israel | Full access to everything |
 | HR | HR staff | Odoo employee data, contracts |
 | Accountant | Accountant | Odoo Accounting (invoices, payments, VAT reports) |
 | Support Agent | 10-15 agents | Zoho (limited), WiFi Support only |
@@ -146,7 +146,7 @@ Never:
 
 | Question | Answer |
 |----------|--------|
-| Who can approve withdrawals? | Only owners (Ilie, David, Gabriel) |
+| Who can approve withdrawals? | Only owners (Ilie, Owner 1 France, Owner 2 Israel) |
 | Who can access server? | Only Ilie (VPN) and HR/Accountant (local) |
 | Who has 2FA? | Everyone |
 | What happens when someone leaves? | All accounts disabled immediately |
