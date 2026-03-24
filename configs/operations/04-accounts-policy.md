@@ -8,10 +8,26 @@ This document defines who has access to what and how accounts are managed.
 
 | Role | Who | Access Level |
 |------|-----|--------------|
-| **Owner** | Ilie, Owner 1, Owner 2 | Full access to everything |
-| **HR / Admin** | Server, Odoo, HR data |
-| **Support Agent** | 12 agents | Zoho (limited), VPN,|
+| **Owner** | Ilie, David, Gabriel | Full access to everything |
+| **HR** | HR staff | Odoo employee data, contracts |
+| **Accountant** | Accountant | Odoo Accounting (invoices, payments, VAT reports) |
+| **Support Agent** | 12 agents | Zoho (limited), WiFi Support only |
 | **No Access** | External contractors | Nothing |
+
+### Odoo Roles
+
+| Role | Access |
+|------|--------|
+| HR Manager | Employees, contracts, salaries, 2FA |
+| Accountant | Invoices, payments, bank accounts, VAT reports, 2FA |
+| Admin | Full access, user management, 2FA |
+
+### WiFi Access
+
+| User | SSID | VLAN | Server Access |
+|------|------|------|---------------|
+| HR, Accountant | Company-HR | 10 | ✅ Yes |
+| Support | Company-Support | 20 | ❌ No |
 
 ---
 
