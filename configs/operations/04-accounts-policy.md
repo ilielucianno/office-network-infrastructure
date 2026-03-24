@@ -8,26 +8,11 @@ This document defines who has access to what and how accounts are managed.
 
 | Role | Who | Access Level |
 |------|-----|--------------|
-| **Owner** | Ilie, David, Gabriel | Full access to everything |
-| **HR** | HR staff | Odoo employee data, contracts |
-| **Accountant** | Accountant | Odoo Accounting (invoices, payments, VAT reports) |
-| **Support Agent** | 12 agents | Zoho (limited), WiFi Support only |
-| **No Access** | External contractors | Nothing |
-
-### Odoo Roles
-
-| Role | Access |
-|------|--------|
-| HR Manager | Employees, contracts, salaries, 2FA |
-| Accountant | Invoices, payments, bank accounts, VAT reports, 2FA |
-| Admin | Full access, user management, 2FA |
-
-### WiFi Access
-
-| User | SSID | VLAN | Server Access |
-|------|------|------|---------------|
-| HR, Accountant | Company-HR | 10 | ✅ Yes |
-| Support | Company-Support | 20 | ❌ No |
+| Owner | Ilie, David, Gabriel | Full access to everything |
+| HR | HR staff | Odoo employee data, contracts |
+| Accountant | Accountant | Odoo Accounting (invoices, payments, VAT reports) |
+| Support Agent | 10-15 agents | Zoho (limited), WiFi Support only |
+| No Access | External contractors | Nothing |
 
 ---
 
@@ -37,10 +22,10 @@ This document defines who has access to what and how accounts are managed.
 
 | Role | Access | 2FA |
 |------|--------|-----|
-| Owners | Full control | ✅ Required |
-| Support Agents | Limited (no withdrawals) | ✅ Required |
+| Owners | Full control | Required |
+| Support Agents | Limited (no withdrawals) | Required |
 
-**Rules:**
+Rules:
 - Every user has their own account — no shared accounts
 - 2FA is mandatory for everyone
 - Passwords must be unique (not used elsewhere)
@@ -53,26 +38,41 @@ This document defines who has access to what and how accounts are managed.
 | User | IP | Access |
 |------|-----|--------|
 | Ilie | 10.10.10.2 | Full network access |
-| Support Agents | 10.10.10.3 - 10.10.10.14 | Odoo only (192.168.30.10) |
+| Support Agents | 10.10.10.3 to 10.10.10.17 | Odoo only (192.168.30.10) |
 
-**Rules:**
+Rules:
 - Each agent has unique key
 - Keys are revoked when agent leaves
 - Spreadsheet tracks keys and IPs
 
 ---
 
-### 3. Server / Odoo Accounts
+### 3. Odoo Accounts
 
-| Role | Access |
-|------|--------|
-| Admin | Full Odoo access, server SSH |
-| HR | Odoo employee data |
-| Support | None (cannot access server) |
+| Role | Access | 2FA |
+|------|--------|-----|
+| Admin | Full Odoo access, server SSH | Required |
+| HR Manager | Employee data, contracts, salaries | Required |
+| Accountant | Invoices, payments, VAT reports, bank accounts | Required |
+| HR Viewer | Read-only employee data | Required |
 
-**Rules:**
+Rules:
 - SSH is key-based only (no passwords)
 - Odoo has 2FA for all users
+
+---
+
+### 4. WiFi Access
+
+| User | SSID | VLAN | Server Access |
+|------|------|------|---------------|
+| HR Staff | Company-HR | 10 | Yes |
+| Accountant | Company-HR | 10 | Yes |
+| Support Agents | Company-Support | 20 | No |
+
+Rules:
+- Support WiFi has client isolation enabled
+- HR WiFi has no isolation (trusted users)
 
 ---
 
@@ -81,11 +81,12 @@ This document defines who has access to what and how accounts are managed.
 | Step | Action | Who |
 |------|--------|-----|
 | 1 | Create Zoho account with 2FA | Owner |
-| 2 | Add to correct role (Support / HR) | Owner |
-| 3 | Generate WireGuard key and config | Owner |
+| 2 | Add to correct role (Support / HR / Accountant) | Owner |
+| 3 | Generate WireGuard key and config (if remote) | Owner |
 | 4 | Send config file securely | Owner |
-| 5 | Train on security basics | Owner |
-| 6 | Test access | Owner |
+| 5 | Create Odoo account with correct role | Owner |
+| 6 | Train on security basics | Owner |
+| 7 | Test access | Owner |
 
 ---
 
@@ -95,7 +96,7 @@ This document defines who has access to what and how accounts are managed.
 |------|--------|
 | 1 | Disable Zoho account immediately |
 | 2 | Remove WireGuard key from router |
-| 3 | Disable Odoo account (where case) |
+| 3 | Disable Odoo account |
 | 4 | Change any shared passwords they knew |
 | 5 | Collect company devices (laptop, phone) |
 | 6 | Document that access was removed |
@@ -112,7 +113,7 @@ This document defines who has access to what and how accounts are managed.
 | Change frequency | Every 6 months (or after any incident) |
 | Storage | Use a password manager (Bitwarden, 1Password) |
 
-**Never:**
+Never:
 - Share passwords via email, SMS, or chat
 - Write passwords on paper at desk
 - Use same password for work and personal accounts
@@ -145,8 +146,8 @@ This document defines who has access to what and how accounts are managed.
 
 | Question | Answer |
 |----------|--------|
-| Who can approve withdrawals? | Only owners (Ilie, Owner 1, Owner 2) |
-| Who can access server? | Only Ilie |
+| Who can approve withdrawals? | Only owners (Ilie, David, Gabriel) |
+| Who can access server? | Only Ilie (VPN) and HR/Accountant (local) |
 | Who has 2FA? | Everyone |
 | What happens when someone leaves? | All accounts disabled immediately |
-| Where are passwords stored? | Password manager (any) |
+| Where are passwords stored? | Password manager (not in this repository) |
