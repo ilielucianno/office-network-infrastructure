@@ -32,13 +32,14 @@ Switch Ports:
 
 ## Wireless SSIDs
 
-| SSID | VLAN | Purpose |
-|------|------|---------|
-| Office-HR | 10 | HR laptops and devices |
-| Office-Support | 20 | Support team laptops |
+| SSID | VLAN | Access | Users |
+|------|------|--------|-------|
+| Company-HR | 10 | Server + Internet | HR, Accountant |
+| Company-Support | 20 | Internet only | Support agents |
 
-WiFi is provided by **Ubiquiti UniFi 6 Plus** connected to the switch.
+**WiFi Isolation:** Client Device Isolation is enabled on Support WiFi — laptops cannot see each other.
 
+WiFi is provided by **Ubiquiti UniFi 6 Plus** connected to the switch (port 10, trunk with VLAN 10 and 20).
 ---
 
 ## VPN Access (WireGuard)
