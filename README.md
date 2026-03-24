@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project documents the complete setup of a secure office network for a small company (3 HR offices + 12 remote support agents). The infrastructure is built on a budget of under €1000 and implements enterprise-grade security practices including VLAN isolation, firewall rules, VPN access, and a self-hosted HR management system.
+This project documents the complete setup of a secure office network for a small company (3 HR offices + 10-15 remote support agents). The infrastructure is built on a budget of under €1000 and implements enterprise-grade security practices including VLAN isolation, firewall rules, VPN access, and a self-hosted HR management system.
 
 **Key features:**
 - Network segmentation (HR / Support / Server / Management)
