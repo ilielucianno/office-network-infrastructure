@@ -17,6 +17,7 @@ Switch Ports:
 - Port 7: Support Laptop 2
 - Port 8: Support Laptop 3
 - Port 9: Server (DB + Odoo)
+- Port 10: WiFi AP (Ubiquiti UniFi 6 Plus)
 
 ---
 
@@ -24,8 +25,8 @@ Switch Ports:
 
 | VLAN ID | Name | Subnet | Gateway | Purpose |
 |---------|------|--------|---------|---------|
-| 10 | HR | 192.168.10.0/24 | 192.168.10.1 | HR workstations, printer |
-| 20 | Support | 192.168.20.0/24 | 192.168.20.1 | Support team laptops |
+| 10 | HR | 192.168.10.0/24 | 192.168.10.1 | HR workstations, printer, accountant |
+| 20 | Support | 192.168.20.0/24 | 192.168.20.1 | Support team laptops (internet only) |
 | 30 | Server | 192.168.30.0/24 | 192.168.30.1 | Odoo server, database |
 
 ---
@@ -34,26 +35,24 @@ Switch Ports:
 
 | SSID | VLAN | Access | Users |
 |------|------|--------|-------|
-| Company-HR | 10 | Server + Internet | HR, Accountant |
+| Company-HR | 10 | Server + Internet | HR staff, Accountant |
 | Company-Support | 20 | Internet only | Support agents |
 
-**WiFi Isolation:** Client Device Isolation is enabled on Support WiFi — laptops cannot see each other.
+**WiFi Isolation:** Client Device Isolation is enabled on Company-Support WiFi. Laptops on this network cannot see each other.
 
 WiFi is provided by **Ubiquiti UniFi 6 Plus** connected to the switch (port 10, trunk with VLAN 10 and 20).
+
 ---
 
 ## VPN Access (WireGuard)
 
-Remote users (12 support agents + admin) connect via WireGuard VPN:
+Remote users (10-15 support agents + admin) connect via WireGuard VPN:
 
-**Connection flow:**
 Remote Client (WireGuard) → Internet → MikroTik Router (WireGuard server on port 13231) → VPN Tunnel (10.10.10.0/24) → Server (192.168.30.10) → Odoo HR System (port 8069)
 
-**VPN Subnet:** `10.10.10.0/24`
-
-**Server Address:** `10.10.10.1` (router)
-
-**Client Addresses:** `10.10.10.2` to `10.10.10.254`
+**VPN Subnet:** 10.10.10.0/24
+**Server Address:** 10.10.10.1 (router)
+**Client Addresses:** 10.10.10.2 to 10.10.10.254
 
 ---
 
@@ -61,12 +60,12 @@ Remote Client (WireGuard) → Internet → MikroTik Router (WireGuard server on 
 
 | Rule | Action |
 |------|--------|
-| HR → Server | ✅ ALLOWED |
-| HR → Support | ❌ DENIED |
-| Support → HR | ❌ DENIED |
-| Support → Server | ❌ DENIED |
-| VPN → Server | ✅ ALLOWED |
-| VPN → HR | ✅ ALLOWED |
+| HR → Server | ALLOWED |
+| HR → Support | DENIED |
+| Support → HR | DENIED |
+| Support → Server | DENIED |
+| VPN → Server | ALLOWED |
+| VPN → HR | ALLOWED |
 
 ---
 
@@ -87,23 +86,32 @@ Remote Client (WireGuard) → Internet → MikroTik Router (WireGuard server on 
 
 ---
 
+## Odoo Roles
+
+| Role | Access |
+|------|--------|
+| HR Manager | Employee data, contracts, salaries |
+| Accountant | Invoices, payments, VAT reports, bank accounts |
+| Admin | Full access, user management |
+
+---
+
 ## Key Design Decisions
 
-1. **Server isolation** – Server is on VLAN 30, accessible only from HR VLAN and VPN. Not exposed to internet.
+1. Server is on VLAN 30, accessible only from HR VLAN and VPN. Not exposed to internet.
 
-2. **Support isolation** – Support team cannot access HR data or server. They only have internet access.
+2. Support team cannot access HR data or server. They only have internet access.
 
-3. **VPN-only remote access** – All remote employees connect via WireGuard. No port forwarding to server.
+3. All remote employees connect via WireGuard. No port forwarding to server.
 
-4. **Single point of management** – Router handles routing, firewall, DHCP, and VPN. Switch handles VLAN tagging.
+4. Router handles routing, firewall, DHCP, and VPN. Switch handles VLAN tagging.
 
-5. **WiFi segregation** – Two SSIDs mapped to VLAN 10 and VLAN 20 keep wireless traffic isolated.
+5. Two SSIDs mapped to VLAN 10 and VLAN 20 keep wireless traffic isolated. Support WiFi has client isolation enabled.
+
+6. Accountant has access to Odoo Accounting module through HR WiFi.
 
 ---
 
 ## Diagram Files
 
-A visual diagram can be created using tools like:
-- **draw.io** – free online diagram tool
-- **Lucidchart** – professional diagrams
-- **Visio** – Microsoft's diagram software
+A visual diagram can be created using tools like draw.io, Lucidchart, or Visio.
