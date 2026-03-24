@@ -2,14 +2,16 @@
 
 ## Overview
 
-This project documents the complete setup of a secure office network for a small company (3 HR offices + 10-15 remote support agents). The infrastructure is built on a budget of under €1000 and implements enterprise-grade security practices including VLAN isolation, firewall rules, VPN access, and a self-hosted HR management system.
+This project documents the complete setup of a secure office network for a small company ( 3 HR offices + 10-15 remote support agents). The infrastructure is built on a budget of under €1000 and implements enterprise-grade security practices including VLAN isolation, firewall rules, VPN access, and a self-hosted HR management system.
 
-**Key features:**
-- Network segmentation (HR / Support / Server / Management)
-- Full VLAN isolation with MikroTik router and switch
-- WireGuard VPN for secure remote access
-- Self-hosted Odoo HR system with 2FA
-- Automated backups and security hardening (Fail2Ban, UFW)
+## Key features:
+- **Network segmentation** — HR, Support, Server completely isolated with VLANs
+- **Full VLAN isolation** — MikroTik router + switch with strict firewall rules
+- **WireGuard VPN** — key-based authentication, unique keys per user
+- **Self-hosted Odoo HR system** — employee database with 2FA
+- **Automated backups** — daily database backups, 30-day retention
+- **Security hardening** — UFW, Fail2Ban, Snort IDS
+- **Operational security** — 2FA on Zoho, withdrawal delays, manual approvals
 
 ---
 
