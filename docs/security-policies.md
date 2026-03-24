@@ -106,11 +106,23 @@ User scans QR code with authenticator app on first login
 Why: 2FA prevents account takeover even if passwords are compromised.
 
 6. Access Control Matrix
-User Type	HR VLAN	Support VLAN	Server	Odoo	Internet
-HR Staff	✅	❌	✅	✅	✅
-Support Staff	❌	✅	❌	❌	✅
-Remote Agents (VPN)	❌	❌	✅ (Odoo only)	✅	via own ISP
-Admin (VPN)	✅	✅	✅	✅	✅
+
+| User Type | HR VLAN | Support VLAN | Server | Odoo | Internet |
+|-----------|---------|--------------|--------|------|----------|
+| HR Staff | ✅ | ❌ | ✅ | ✅ | ✅ |
+| Accountant | ✅ | ❌ | ✅ | ✅ (Accounting) | ✅ |
+| Support Staff | ❌ | ✅ | ❌ | ❌ | ✅ |
+| Remote Agents (VPN) | ❌ | ❌ | ✅ (Odoo only) | ✅ | via own ISP |
+| Admin (VPN) | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+### Odoo Roles
+
+| Role | Access |
+|------|--------|
+| HR Manager | Employee data, contracts, salaries |
+| Accountant | Invoices, payments, VAT reports, bank accounts |
+| Admin | Full access, user management |
+
 7. Backup Policy
 Backup Type	Frequency	Location	Retention
 Database (MariaDB)	Daily at 2:00 AM	External HDD	30 days
