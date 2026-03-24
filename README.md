@@ -157,16 +157,14 @@ All configuration files are available in the `configs/` folder:
 | Phishing attack (like crypto incident) | Quick response runbook, funds recovery procedure |
 
 ---
-
 ## Operations & Security Policies
 
 Operational procedures and security policies:
 
-1. [Zoho Security](operations/01-zoho-security.md)
-2. [Incident Response Runbook](operations/02-incident-runbook.md)
-3. [Backup Procedures](operations/03-backup-procedures.md)
-4. [Accounts & Access Policy](operations/04-accounts-policy.md)
-   
+1. [Zoho Security](configs/operations/01-zoho-security.md)
+2. [Incident Response Runbook](configs/operations/02-incident-runbook.md)
+3. [Backup Procedures](configs/operations/03-backup-procedures.md)
+4. [Accounts & Access Policy](configs/operations/04-accounts-policy.md)
 ---   
 
 ## Lessons Learned
