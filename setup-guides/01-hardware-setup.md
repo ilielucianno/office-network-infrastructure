@@ -6,7 +6,7 @@ This guide covers the physical installation and cabling of all network component
 
 ## Prerequisites
 
-- All hardware from the [Hardware List](../docs/hardware-list.md)
+- All hardware from the [Hardware List](..docs/docs/hardware-list.md)
 - Cat6 Ethernet cables (various lengths)
 - Cable ties for management
 - Phillips screwdriver (for rack mounting)
