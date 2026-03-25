@@ -82,6 +82,7 @@ Allow only from HR VLAN and VPN subnet:
 | Automatic updates | unattended-upgrades enabled |
 | Fail2Ban | Blocks IPs after 3 failed SSH attempts |
 | Snort 3 IDS | Intrusion detection system with community rules + custom rules for SSH, port scans, and unauthorized access |
+| Wazuh SIEM | Centralized log collection, analysis, and email alerts for high-severity events |
 
 ---
 
