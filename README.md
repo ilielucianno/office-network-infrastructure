@@ -210,7 +210,7 @@ I am actively building my cybersecurity knowledge while working full-time. This 
 - ✅ This project — full network infrastructure with VLANs, VPN, IDS, and operational security
 
 ### In Progress
-- 🔄 TryHackMe SEC1 — 70% completed (estimated completion: April 2026)
+- 🔄 TryHackMe SEC1 — 82% completed (estimated completion: April 2026)
 - 🔄 Security+ (CompTIA) — started
 - 🔄 Network+ (CompTIA) — started
 
