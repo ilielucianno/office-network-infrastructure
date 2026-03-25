@@ -81,7 +81,9 @@ The complete step-by-step documentation is available in the `setup-guides/` fold
 6. [Odoo Installation & HR Configuration](setup-guides/06-odoo-install.md)
 7. [WireGuard Client Setup](setup-guides/07-wireguard-clients.md)
 8. [2FA & Backup](setup-guides/08-2fa-backup.md)
+9. [IDS Setup (Snort 3)](setup-guides/09-ids-setup.md)
 10. [Wazuh SIEM Setup](setup-guides/10-wazuh-siem.md)
+    
 ---
 
 ## Configuration Files
