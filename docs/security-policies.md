@@ -86,7 +86,36 @@ Allow only from HR VLAN and VPN subnet:
 
 ---
 
-## 6. Odoo Security
+## 6. Endpoint Security
+
+All company laptops and workstations are protected with multiple layers of antivirus protection:
+
+| Device Type | Protection | Status |
+|-------------|------------|--------|
+| Windows Laptops | Windows Security (built-in) | Enabled |
+| Windows Laptops | Avira Free (additional layer) | Installed |
+| Updates | Windows Update automatic | Configured |
+
+### Policy
+
+- Windows Security real-time protection is enabled on all devices
+- Avira Free provides an additional scanning layer
+- Automatic updates are enabled for Windows and antivirus definitions
+- Users are not allowed to disable antivirus or firewall
+- Regular full scans are scheduled weekly
+
+### Why Two Antivirus Solutions
+
+Windows Security provides baseline protection. Avira Free adds:
+- Additional signature database
+- Behavior-based detection
+- Second opinion on suspicious files
+
+Running two antivirus solutions is acceptable when one is the built-in Windows Defender and the second is a lightweight scanner without real-time conflicts.
+
+---
+
+## 7. Odoo Security
 
 | Measure | Implementation |
 |---------|----------------|
@@ -105,7 +134,7 @@ Allow only from HR VLAN and VPN subnet:
 
 ---
 
-## 7. Access Control Matrix
+## 8. Access Control Matrix
 
 | User Type | HR VLAN | Support VLAN | Server | Odoo | Internet |
 |-----------|---------|--------------|--------|------|----------|
@@ -117,7 +146,7 @@ Allow only from HR VLAN and VPN subnet:
 
 ---
 
-## 8. Backup Policy
+## 9. Backup Policy
 
 | Backup Type | Frequency | Location | Retention |
 |-------------|-----------|----------|-----------|
@@ -129,7 +158,7 @@ Allow only from HR VLAN and VPN subnet:
 
 ---
 
-## 9. Incident Response Plan
+## 10. Incident Response Plan
 
 ### Phishing / Credential Theft
 
@@ -148,7 +177,7 @@ Allow only from HR VLAN and VPN subnet:
 
 ---
 
-## 10. Security Checklist (Implemented)
+## 11. Security Checklist (Implemented)
 
 - [x] VLAN segmentation between departments
 - [x] Firewall rules blocking lateral movement
@@ -158,7 +187,9 @@ Allow only from HR VLAN and VPN subnet:
 - [x] 2FA on Zoho CRM
 - [x] UFW on server with strict allow rules
 - [x] Fail2Ban on server
-- [x] Snort IDS monitoring
+- [x] Snort 3 IDS monitoring
+- [x] Wazuh SIEM monitoring
+- [x] Endpoint antivirus (Windows Security + Avira)
 - [x] Automatic security updates
 - [x] Daily database backups
 - [x] WiFi client isolation on Support network
