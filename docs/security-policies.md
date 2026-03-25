@@ -81,7 +81,7 @@ Allow only from HR VLAN and VPN subnet:
 | Firewall | UFW with strict allow lists (HR and VPN only) |
 | Automatic updates | unattended-upgrades enabled |
 | Fail2Ban | Blocks IPs after 3 failed SSH attempts |
-| Snort IDS | Intrusion detection system monitoring traffic |
+| Snort 3 IDS | Intrusion detection system with community rules + custom rules for SSH, port scans, and unauthorized access |
 
 ---
 
