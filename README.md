@@ -15,6 +15,7 @@ This project documents the complete setup of a secure office network for a small
 - **Operational security** — 2FA on Zoho, withdrawal delays, manual approvals
 - **Odoo Accounting** — invoices, payments, VAT reports for Cyprus
 - **Separate WiFi** — HR + Accountant on VLAN 10, Support on VLAN 20 with client isolation
+- **SIEM monitoring** — Wazuh centralizes logs from server, router, and Snort with email alerts
 
 ---
 
