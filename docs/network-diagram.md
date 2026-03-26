@@ -11,7 +11,7 @@ Internet → MikroTik Router (ether1 = WAN, ether2-5 = LAN) → MikroTik Switch 
 Switch Ports:
 - Port 2: HR PC1
 - Port 3: HR PC2
-- Port 4: HR PC3 (if present)
+- Port 4: HR PC3 
 - Port 5: HR Printer
 - Port 6: Support Laptop 1
 - Port 7: Support Laptop 2
