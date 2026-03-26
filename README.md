@@ -225,8 +225,6 @@ I've been working in IT infrastructure for 10+ years, managing networks, hardwar
 
 **This repository is a living document of my cybersecurity journey.**
 
-GitHub Portfolio: https://github.com/illelucianno/office-network-infrastructure
-
 ---
 
 ## License
