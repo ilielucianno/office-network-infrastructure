@@ -198,7 +198,7 @@ As I learn more, I will add new features to this network and document them here.
 ## About Author
 
 **Ilie Lucian**  
-Technical Department Manager with 10+ years in IT infrastructure, networking, and hardware. Currently pursuing certifications in cybersecurity (TryHackMe SEC1, Security+, Network+).
+Technical Department Manager with 10+ years in IT infrastructure, networking, and hardware. SEC1 CERTIFIED Currently pursuing certifications in cybersecurity  (Security+ in p5rogress, Network+).
 
 ## Current Learning Path
 
@@ -208,11 +208,12 @@ I am actively building my cybersecurity knowledge while working full-time. This 
 - ✅ TryHackMe Pre Security
 - ✅ TryHackMe SEC0
 - ✅ This project — full network infrastructure with VLANs, VPN, IDS, and operational security
-
+- ✅ TryHackMe SEC1
+- 
 ### In Progress
-- 🔄 TryHackMe SEC1 — 82% completed (estimated completion: April 2026)
-- 🔄 Security+ (CompTIA) — started
-- 🔄 Network+ (CompTIA) — started
+
+- 🔄 Security+ (CompTIA) — started 
+- 🔄 Network+ (CompTIA) -started
 
 ### Next Steps (Next 6 Months)
 - Complete Security+ and Network+ certifications
