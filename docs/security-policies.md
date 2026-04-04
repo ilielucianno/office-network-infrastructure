@@ -88,31 +88,48 @@ Allow only from HR VLAN and VPN subnet:
 
 ## 6. Endpoint Security
 
-All company laptops and workstations are protected with multiple layers of antivirus protection:
+All company laptops and workstations are protected with two layers of antivirus/antimalware protection:
 
-| Device Type | Protection | Status |
-|-------------|------------|--------|
-| Windows Laptops | Windows Security (built-in) | Enabled |
-| Windows Laptops | Avira Free (additional layer) | Installed |
-| Updates | Windows Update automatic | Configured |
+| Device Type | Primary Protection | Secondary Protection | Status |
+|-------------|-------------------|---------------------|--------|
+| Windows Laptops | Windows Security (built-in) | Avira Free | ✅ Both active |
+| Windows Laptops | Windows Firewall | - | ✅ Enabled |
+| Updates | Windows Update automatic | Avira definitions auto | ✅ Configured |
+
+### Protection Layers
+
+| Layer | Product | Role |
+|-------|---------|------|
+| **1** | Windows Security | Real-time protection, firewall, exploit protection |
+| **2** | Avira Free | Additional signature database, behavior-based detection, second opinion on suspicious files |
+| **3** | Windows Firewall | Inbound/outbound traffic filtering |
 
 ### Policy
 
 - Windows Security real-time protection is enabled on all devices
-- Avira Free provides an additional scanning layer
-- Automatic updates are enabled for Windows and antivirus definitions
+- Avira Free provides an additional scanning layer (both active simultaneously)
+- Automatic updates are enabled for Windows and both antivirus definitions
 - Users are not allowed to disable antivirus or firewall
 - Regular full scans are scheduled weekly
 
 ### Why Two Antivirus Solutions
 
-Windows Security provides baseline protection. Avira Free adds:
-- Additional signature database
-- Behavior-based detection
-- Second opinion on suspicious files
+Windows Security provides baseline protection with low resource usage. Avira Free adds:
+- Additional signature database (different detection engine)
+- Behavior-based detection for zero-day threats
+- Second opinion on suspicious files before execution
 
-Running two antivirus solutions is acceptable when one is the built-in Windows Defender and the second is a lightweight scanner without real-time conflicts.
+Running two antivirus solutions is acceptable when:
+- One is the built-in Windows Defender (low overhead)
+- The second is a lightweight scanner without real-time conflicts (Avira Free in passive mode or with carefully configured exceptions)
+- Both are configured to exclude each other's folders and processes
 
+### Firewall Configuration
+
+- Windows Firewall is enabled on all profiles (Domain, Private, Public)
+- Inbound connections: Block by default
+- Outbound connections: Allow by default (with logging)
+- Rules are managed via Group Policy or manually per device
 ---
 
 ## 7. Odoo Security
