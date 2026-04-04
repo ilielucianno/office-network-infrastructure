@@ -130,6 +130,7 @@ Running two antivirus solutions is acceptable when:
 - Inbound connections: Block by default
 - Outbound connections: Allow by default (with logging)
 - Rules are managed via Group Policy or manually per device
+
 ---
 
 ## 7. Odoo Security
