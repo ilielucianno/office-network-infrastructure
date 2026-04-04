@@ -5,6 +5,8 @@ This project documents the complete setup of a secure office network for a small
 
 **The business operates online casinos (branded separately, no connection to this infrastructure).** All financial operations (withdrawals, bonuses) are protected by additional layers: 2FA on Zoho, IP verification, 7-21 day withdrawal delays, and manual approval by owners.
 
+---
+
 ## Key features:
 - **Network segmentation** — HR, Support, Server completely isolated with VLANs
 - **Full VLAN isolation** — MikroTik router + switch with strict firewall rules
@@ -16,6 +18,7 @@ This project documents the complete setup of a secure office network for a small
 - **Odoo Accounting** — invoices, payments, VAT reports for Cyprus
 - **Separate WiFi** — HR + Accountant on VLAN 10, Support on VLAN 20 with client isolation
 - **SIEM monitoring** — Wazuh centralizes logs from server, router, and Snort with email alerts
+- **NGFW** — OPNsense + Zenarmor for Layer 7 filtering and application control (added April 2026)
 
 ---
 
@@ -31,7 +34,7 @@ This project documents the complete setup of a secure office network for a small
 | Cables | Cat6 + accessories | ~80 |
 | **Total** | | **~885–950** |
 
-All components were purchased with official invoices (VAT included) from suppliers in Cyprus.
+All components were purchased with official invoices (VAT included) from suppliers in Cyprus. Hardware last updated: **November 2025**.
 
 ---
 
@@ -58,14 +61,16 @@ Internet → MikroTik Router → MikroTik Switch → HR / Support / Server / WiF
 
 ## Technologies Used
 
-- Routing & Firewall: MikroTik RouterOS (VLAN, firewall, NAT)
-- Switching: MikroTik SwitchOS (VLAN trunking)
-- VPN: WireGuard
-- Server OS: Ubuntu Server 22.04 LTS
-- Database: MariaDB
-- HR System: Odoo (self-hosted)
-- Security: UFW, Fail2Ban, 2FA (Google Authenticator)
-- Backup: Automated cron jobs + MySQL dumps
+- **Routing & Firewall:** MikroTik RouterOS (VLAN, firewall, NAT)
+- **Switching:** MikroTik SwitchOS (VLAN trunking)
+- **VPN:** WireGuard
+- **Server OS:** Ubuntu Server 22.04 LTS
+- **Database:** MariaDB
+- **HR System:** Odoo (self-hosted)
+- **Security:** UFW, Fail2Ban, 2FA (Google Authenticator)
+- **Backup:** Automated cron jobs + MySQL dumps
+- **IDS/IPS:** Snort 3 (added January 2026), OPNsense + Zenarmor (added April 2026)
+- **SIEM:** Wazuh (added January 2026)
 
 ---
 
@@ -83,7 +88,8 @@ The complete step-by-step documentation is available in the `setup-guides/` fold
 8. [2FA & Backup](setup-guides/08-2fa-backup.md)
 9. [IDS Setup (Snort 3)](setup-guides/09-ids-setup.md)
 10. [Wazuh SIEM Setup](setup-guides/10-wazuh-siem.md)
-    
+11. [OPNsense + Zenarmor NGFW Setup](setup-guides/11-opnsense-zenarmor-setup.md)
+
 ---
 
 ## Configuration Files
@@ -99,6 +105,12 @@ All configuration files are available in the `configs/` folder:
 
 ---
 
+## Quick Reference
+
+For daily operations and troubleshooting, see the [Cheatsheet](CHEATSHEET.md).
+
+---
+
 ## Key Security Implementations
 
 ### Network & Infrastructure
@@ -111,7 +123,9 @@ All configuration files are available in the `configs/` folder:
 | WireGuard VPN | Key-based authentication, unique keys per user, IP tracking |
 | Server Hardening | UFW firewall (allow only HR and VPN subnets), automatic security updates |
 | Fail2Ban | Blocks brute-force attacks on SSH and Odoo |
-| Intrusion Detection | Snort IDS monitors traffic and logs alerts |
+| Intrusion Detection | Snort 3 IDS monitors traffic and logs alerts (low-memory mode) |
+| Next-Generation Firewall | OPNsense + Zenarmor for Layer 7 filtering, application control, IPS |
+| SIEM | Wazuh centralizes logs from server, OPNsense, and Snort with email alerts |
 | Backup | Daily automated database backups, 30-day retention |
 
 ### Operational & Access Control
@@ -134,13 +148,14 @@ All configuration files are available in the `configs/` folder:
 - Casino websites (Malta/Curacao licenses) — no connection to company infrastructure
 - Zoho CRM (cloud) — protected by 2FA and IP verification
 
-**Internal Layer (Your Infrastructure):**
-- MikroTik Router — firewall, VPN server, VLAN routing
+**Internal Layer (Infrastructure):**
+- OPNsense NGFW (VM) — Layer 7 filtering, IPS, application control (added April 2026)
+- MikroTik Router — VPN server, VLAN routing
 - MikroTik Switch — VLAN trunking, port isolation
 - Three isolated networks:
   - VLAN 10 (HR) — can access server only
   - VLAN 20 (Support) — internet only, no access to HR or server
-  - VLAN 30 (Server) — Odoo HR system, accessible only from HR and VPN
+  - VLAN 30 (Server) — Odoo HR system, Wazuh, Snort
 
 **Remote Access:**
 - WireGuard VPN — key-based authentication
@@ -158,8 +173,10 @@ All configuration files are available in the `configs/` folder:
 | Attacker tries to brute-force server | Fail2Ban blocks after 3 attempts |
 | Attacker steals physical hardware | Server is locked, data is encrypted, backups offsite |
 | Phishing attack (like crypto incident) | Quick response runbook, funds recovery procedure |
+| Malware or malicious website | Zenarmor blocks at gateway (Layer 7 filtering) |
 
 ---
+
 ## Operations & Security Policies
 
 Operational procedures and security policies:
@@ -168,7 +185,8 @@ Operational procedures and security policies:
 2. [Incident Response Runbook](configs/operations/02-incident-runbook.md)
 3. [Backup Procedures](configs/operations/03-backup-procedures.md)
 4. [Accounts & Access Policy](configs/operations/04-accounts-policy.md)
----   
+
+---
 
 ## Lessons Learned
 
@@ -176,6 +194,8 @@ Operational procedures and security policies:
 - WireGuard setup is simple but key management must be organized – I created a spreadsheet for client keys.
 - Odoo permissions are granular – I created two roles: HR Manager (full access) and HR Viewer (no salary data).
 - 2FA in Odoo must be enabled per user – Not a global setting, so I had to configure each user manually.
+- Running OPNsense as a VM on the existing server is possible but requires careful resource allocation (RAM/CPU).
+- Snort can be set to low-memory mode to coexist with other services.
 
 ---
 
@@ -198,7 +218,10 @@ As I learn more, I will add new features to this network and document them here.
 ## About Author
 
 **Ilie Lucian**  
-Technical Department Manager with 10+ years in IT infrastructure, networking, and hardware. SEC1 CERTIFIED Currently pursuing certifications in cybersecurity  (Security+ in p5rogress, Network+).
+Technical Department Manager with 10+ years in IT infrastructure, networking, and hardware.  
+**SEC1 Certified** (TryHackMe). Currently pursuing Security+ and Network+ certifications.
+
+---
 
 ## Current Learning Path
 
@@ -207,19 +230,18 @@ I am actively building my cybersecurity knowledge while working full-time. This 
 ### Completed
 - ✅ TryHackMe Pre Security
 - ✅ TryHackMe SEC0
-- ✅ This project — full network infrastructure with VLANs, VPN, IDS, and operational security
 - ✅ TryHackMe SEC1
-- 
-### In Progress
+- ✅ This project — full network infrastructure with VLANs, VPN, IDS, SIEM, and NGFW
 
-- 🔄 Security+ (CompTIA) — started 
-- 🔄 Network+ (CompTIA) -started
+### In Progress
+- 🔄 Security+ (CompTIA) — started
+- 🔄 Network+ (CompTIA) — started
 
 ### Next Steps (Next 6 Months)
 - Complete Security+ and Network+ certifications
 - Start Cloud Security (AWS / Azure fundamentals)
 - Document more operational procedures
-- Add monitoring with Wazuh / Grafana
+- Deploy OPNsense to dedicated hardware
 
 ### Why I Built This
 I've been working in IT infrastructure for 10+ years, managing networks, hardware, and teams. Recently, I realized that what I was already doing (firewalls, VLANs, VPNs, incident response) has a name: **cybersecurity**. Now I'm formalizing my knowledge through certifications and documenting real projects to demonstrate my skills.
