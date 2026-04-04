@@ -194,3 +194,7 @@ Running two antivirus solutions is acceptable when one is the built-in Windows D
 - [x] Daily database backups
 - [x] WiFi client isolation on Support network
 - [x] Accountant role with limited access
+- [x] OPNsense + Zenarmor NGFW (Layer 7 filtering, IPS)
+- [x] Snort low-memory mode (secondary IDS)
+- [x] Wazuh receiving syslog from OPNsense
+- [x] WebGUI access restricted to LAN/MGMT only
