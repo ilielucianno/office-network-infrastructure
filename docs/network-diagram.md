@@ -2,22 +2,51 @@
 
 This document describes the logical and physical network architecture of the office infrastructure.
 
+Last updated: **April 6, 2026**
+
 ---
 
 ## Physical Topology
+INTERNET (ISP)
+│
+▼
+[ MikroTik Router ] (ether1 = WAN, ether2 = trunk to backbone)
+│
+▼
+[ TP-Link TL-SG108E ] ← BACKBONE SWITCH (8 ports, managed)
+│
+├──────────┬──────────┬──────────────┬──────────────┐
+│ │ │ │ │
+▼ ▼ ▼ ▼ ▼
+Port 2 Port 3 Port 4 Port 5 Port 6
+│ │ │ │ │
+▼ ▼ ▼ ▼ ▼
+[Server] [WiFi AP] [HR Room] [Consultancy] [Spare]
+(UniFi) Switch Switch
+│ │
+▼ ▼
+HR PC1, PC2 IT Laptop
+Printer Consultancy 1
+Consultancy 2
 
-Internet → MikroTik Router (ether1 = WAN, ether2-5 = LAN) → MikroTik Switch (port1 = trunk from router, ports 2-9 = access)
+text
 
-Switch Ports:
-- Port 2: HR PC1
-- Port 3: HR PC2
-- Port 4: HR PC3 
-- Port 5: HR Printer
-- Port 6: Support Laptop 1
-- Port 7: Support Laptop 2
-- Port 8: Support Laptop 3
-- Port 9: Server (DB + Odoo)
-- Port 10: WiFi AP (Ubiquiti UniFi 6 Plus)
+---
+
+## New Architecture (April 6, 2026)
+
+The network has been restructured from a "router-centric" design to a **star topology** with a dedicated backbone switch.
+
+### Before (Old Setup):
+- All devices connected directly to the MikroTik router (only 5 ports)
+- Router was overloaded with cabling
+- Difficult to expand
+
+### After (New Setup):
+- **Backbone switch (TL-SG108E)** handles all internal traffic
+- Router only connects to backbone switch (1 cable)
+- Each room has its own small switch (TL-SG105)
+- Clean, professional, expandable
 
 ---
 
@@ -29,6 +58,8 @@ Switch Ports:
 | 20 | Support | 192.168.20.0/24 | 192.168.20.1 | Support team laptops (internet only) |
 | 30 | Server | 192.168.30.0/24 | 192.168.30.1 | Odoo server, database |
 
+*Note: VLAN configuration remains on the MikroTik router. The TP-Link switches currently operate in default mode (all ports same VLAN). Future VLAN implementation is possible on the TL-SG108E.*
+
 ---
 
 ## Wireless SSIDs
@@ -38,9 +69,9 @@ Switch Ports:
 | Company-HR | 10 | Server + Internet | HR staff, Accountant |
 | Company-Support | 20 | Internet only | Support agents |
 
-**WiFi Isolation:** Client Device Isolation is enabled on Company-Support WiFi. Laptops on this network cannot see each other.
+**WiFi Isolation:** Client Device Isolation is enabled on Company-Support WiFi.
 
-WiFi is provided by **Ubiquiti UniFi 6 Plus** connected to the switch (port 10, trunk with VLAN 10 and 20).
+WiFi is provided by **Ubiquiti UniFi 6 Plus** connected to the backbone switch (Port 3).
 
 ---
 
@@ -79,6 +110,7 @@ Remote Client (WireGuard) → Internet → MikroTik Router (WireGuard server on 
 | Router (VLAN 30) | 192.168.30.1 | vlan30-server |
 | Router (VPN) | 10.10.10.1 | wg0 |
 | Server | 192.168.30.10 (static) | eth0 |
+| Backbone Switch | 192.168.10.2 (optional, for management) | - |
 | HR PCs | 192.168.10.x (DHCP) | - |
 | HR Printer | 192.168.10.x (DHCP/reserved) | - |
 | Support Laptops | 192.168.20.x (DHCP) | - |
@@ -86,32 +118,30 @@ Remote Client (WireGuard) → Internet → MikroTik Router (WireGuard server on 
 
 ---
 
-## Odoo Roles
+## Cabling Issues & Resolution
 
-| Role | Access |
-|------|--------|
-| HR Manager | Employee data, contracts, salaries |
-| Accountant | Invoices, payments, VAT reports, bank accounts |
-| Admin | Full access, user management |
+During installation:
+- Two Cat6 cables were found to be faulty (too short and intermittent connectivity)
+- Both were replaced with new Cat6 cables
+- After replacement, all connections worked immediately
+
+**Lesson learned:** Always test cables before final routing. Faulty cables can cause intermittent issues that are hard to debug.
 
 ---
 
 ## Key Design Decisions
 
-1. Server is on VLAN 30, accessible only from HR VLAN and VPN. Not exposed to internet.
-
-2. Support team cannot access HR data or server. They only have internet access.
-
-3. All remote employees connect via WireGuard. No port forwarding to server.
-
-4. Router handles routing, firewall, DHCP, and VPN. Switch handles VLAN tagging.
-
-5. Two SSIDs mapped to VLAN 10 and VLAN 20 keep wireless traffic isolated. Support WiFi has client isolation enabled.
-
-6. Accountant has access to Odoo Accounting module through HR WiFi.
+1. **Star topology** – Backbone switch centralizes all internal traffic
+2. **Router offload** – Router only handles routing, firewall, VPN (not switching)
+3. **Room-level switches** – Easy to add new devices in each room
+4. **Managed backbone** – TL-SG108E allows future VLAN implementation
+5. **Unmanaged room switches** – Simple, reliable, no configuration needed
 
 ---
 
 ## Diagram Files
 
-A visual diagram can be created using tools like draw.io, Lucidchart, or Visio.
+A visual diagram can be created using tools like:
+- **draw.io** – free online diagram tool
+- **Lucidchart** – professional diagrams
+- **Visio** – Microsoft's diagram software
