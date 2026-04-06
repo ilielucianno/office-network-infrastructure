@@ -17,7 +17,7 @@ Last updated: **April 6, 2026**
 
 ## Step 1: Position the Router
 
-The MikroTik hAP ac² should be placed near the internet entry point (ISP modem).
+The MikroTik hAP ac² placed near the internet entry point (ISP modem).
 
 **Connections:**
 - **ether1** → ISP modem (WAN)
