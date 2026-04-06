@@ -148,6 +148,54 @@ Support laptops can be wired or wireless.
 
 ---
 
+## Update: New Switch Setup (April 6, 2026)
+
+The network has been restructured with dedicated switches for better performance and expandability.
+
+### New Hardware Added
+
+| Component | Model | Vendor | Purpose |
+|-----------|-------|--------|---------|
+| Backbone Switch | TP-Link TL-SG108E | Senetic (ordered) | Central 8-port managed switch |
+| HR Room Switch | TP-Link TL-SG105 | Bionic (Nicosia) | 5-port unmanaged switch for HR + Accountant |
+| Consultancy Room Switch | TP-Link TL-SG105 | Bionic (Nicosia) | 5-port unmanaged switch for Consultancy + IT |
+
+### New Topology
+
+### Installation Notes
+
+1. **Backbone Switch (TL-SG108E):**
+   - Placed near the router
+   - Connected via short Cat6 cable from router ether2 to switch Port 1
+   - No configuration needed for basic operation (plug-and-play)
+
+2. **Room Switches (TL-SG105):**
+   - One installed in HR room, one in Consultancy room
+   - Connected via long Cat6 cables from backbone switch
+   - Completely unmanaged – no configuration required
+
+3. **Cable Issues Resolved:**
+   - Two faulty Cat6 cables were identified (too short)
+   - Both were replaced with new Cat6 cables
+   - All connections working properly after replacement
+
+### Configuration Changes
+
+| Device | Changes Made |
+|--------|--------------|
+| MikroTik Router | None needed – router only sees the backbone switch |
+| TP-Link TL-SG108E | Default configuration (all ports same VLAN) – works immediately |
+| TP-Link TL-SG105 | No configuration possible (unmanaged) – plug-and-play |
+
+### Benefits Achieved
+
+- Router ports no longer overloaded
+- Each room can be expanded independently
+- Cleaner cable management
+- Professional star topology
+- Future VLAN-ready (on TL-SG108E)
+---
+
 ## Next Steps
 
 Proceed to [02 - Router Configuration](02-router-config.md) to configure the MikroTik router.
