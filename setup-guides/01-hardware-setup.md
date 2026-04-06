@@ -30,7 +30,7 @@ The MikroTik hAP ac² placed near the internet entry point (ISP modem).
 
 ## Step 2: Position the Backbone Switch
 
-The TP-Link TL-SG108E is the central backbone switch for all wired connections. It should be placed near the router.
+The TP-Link TL-SG108E is the central backbone switch for all wired connections. Placed near the router.
 
 **Port Mapping:**
 
@@ -85,7 +85,7 @@ The TP-Link TL-SG105 is placed in the Consultancy room (shared with IT).
 
 ## Step 5: Position the Server
 
-The Intel N100 mini PC should be placed in a secure location (locked cabinet if possible).
+The Intel N100 mini PC placed in a secure location (locked cabinet).
 
 **Connections:**
 - Ethernet cable from server to **Backbone Switch Port 2**
@@ -98,12 +98,10 @@ The Intel N100 mini PC should be placed in a secure location (locked cabinet if 
 
 ## Step 6: Position the WiFi Access Point
 
-The Ubiquiti UniFi 6 Plus should be placed in a central location for optimal coverage.
+The Ubiquiti UniFi 6 Plus placed in a central location for optimal coverage.
 
 **Mounting Options:**
-- Ceiling mount (recommended)
-- Wall mount
-- Desk placement
+- Ceiling mount (my setup)
 
 **Connection:**
 - Ethernet cable from AP to **Backbone Switch Port 3**
