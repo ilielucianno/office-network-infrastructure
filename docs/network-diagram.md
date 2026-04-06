@@ -7,29 +7,21 @@ Last updated: **April 6, 2026**
 ---
 
 ## Physical Topology
-INTERNET (ISP)
-│
-▼
-[ MikroTik Router ] (ether1 = WAN, ether2 = trunk to backbone)
-│
-▼
-[ TP-Link TL-SG108E ] ← BACKBONE SWITCH (8 ports, managed)
-│
-├──────────┬──────────┬──────────────┬──────────────┐
-│ │ │ │ │
-▼ ▼ ▼ ▼ ▼
-Port 2 Port 3 Port 4 Port 5 Port 6
-│ │ │ │ │
-▼ ▼ ▼ ▼ ▼
-[Server] [WiFi AP] [HR Room] [Consultancy] [Spare]
-(UniFi) Switch Switch
-│ │
-▼ ▼
-HR PC1, PC2 IT Laptop
-Printer Consultancy 1
-Consultancy 2
 
-text
+**Level 1:** Internet → MikroTik Router → TP-Link TL-SG108E (Backbone)
+
+**Level 2 (Backbone ports):**
+- Port 2 → Server
+- Port 3 → WiFi AP
+- Port 4 → HR Room Switch (TL-SG105)
+- Port 5 → Consultancy Room Switch (TL-SG105)
+- Port 6 → Spare
+
+**Level 3 (HR Room - TL-SG105):**
+- HR PC1 | HR PC2 | HR Printer
+
+**Level 3 (Consultancy Room - TL-SG105):**
+- IT Laptop | Consultancy 1 | Consultancy 2
 
 ---
 
