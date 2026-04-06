@@ -24,18 +24,21 @@ This project documents the complete setup of a secure office network for a small
 
 ## Hardware List
 
-| Component | Model | Price (€) |
-|-----------|-------|----------|
-| Router | MikroTik hAP ac² | ~65 |
-| Switch | MikroTik CRS326-24G-2S+RM | ~200 |
-| WiFi AP | Ubiquiti UniFi 6 Plus | ~110 |
-| Server | Mini PC Intel N100 / 16GB RAM / 512GB SSD | ~300 |
-| Printer | HP LaserJet MFP 135a | ~130 |
-| Cables | Cat6 + accessories | ~80 |
-| **Total** | | **~885–950** |
+| Component | Model | Price (€) | Notes |
+|-----------|-------|----------|-------|
+| Router | MikroTik hAP ac² | ~65 | Firewall, VPN, VLAN routing |
+| **Backbone Switch** | **TP-Link TL-SG108E** | **~30** | **8-port managed switch (April 2026)** |
+| **HR Room Switch** | **TP-Link TL-SG105** | **~18** | **5-port unmanaged (April 2026)** |
+| **Consultancy Switch** | **TP-Link TL-SG105** | **~18** | **5-port unmanaged (April 2026)** |
+| WiFi AP | Ubiquiti UniFi 6 Plus | ~110 | Wireless access |
+| Server | Mini PC Intel N100 / 16GB / 512GB SSD | ~300 | Odoo, Wazuh, Snort |
+| Printer | HP LaserJet MFP 135a | ~130 | HR printing |
+| Cables | Cat6 + accessories | ~80 | Cabling |
+| **Total** | | **~750-800** | |
 
-All components were purchased with official invoices (VAT included) from suppliers in Cyprus. Hardware last updated: **November 2025**.
+All components purchased with official invoices from Cyprus suppliers (Senetic, Bionic, Skroutz).
 
+**Network topology updated April 6, 2026** – New backbone switch architecture implemented.
 ---
 
 ## Network Architecture
