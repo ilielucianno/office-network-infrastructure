@@ -2,6 +2,8 @@
 
 This guide covers the physical installation and cabling of all network components.
 
+Last updated: **April 6, 2026**
+
 ---
 
 ## Prerequisites
@@ -9,7 +11,8 @@ This guide covers the physical installation and cabling of all network component
 - All hardware from the [Hardware List](../docs/hardware-list.md)
 - Cat6 Ethernet cables (various lengths)
 - Cable ties for management
-- Phillips screwdriver (for rack mounting)
+- Phillips screwdriver (for wall mounting)
+
 ---
 
 ## Step 1: Position the Router
@@ -18,50 +21,82 @@ The MikroTik hAP ac² should be placed near the internet entry point (ISP modem)
 
 **Connections:**
 - **ether1** → ISP modem (WAN)
-- **ether2** → Switch (trunk port)
-- **ether3-5** → spare or direct connections
+- **ether2** → Backbone Switch (TL-SG108E)
+- **ether3-5** → spare (not used in new setup)
 
 **Power:** Use the included power adapter.
 
 ---
 
-## Step 2: Position the Switch
+## Step 2: Position the Backbone Switch
 
-The MikroTik CRS326-24G-2S+RM is the central hub for all wired connections.
+The TP-Link TL-SG108E is the central backbone switch for all wired connections. It should be placed near the router.
 
 **Port Mapping:**
 
 | Port | Connected Device | Cable Type |
 |------|------------------|------------|
-| Port 1 | Router (ether2) | Cat6 |
-| Port 2 | HR PC1 | Cat6 |
-| Port 3 | HR PC2 | Cat6 |
-| Port 4 | HR PC3 (if present) | Cat6 |
-| Port 5 | HR Printer | Cat6 |
-| Port 6 | Support Laptop 1 | Cat6 |
-| Port 7 | Support Laptop 2 | Cat6 |
-| Port 8 | Support Laptop 3 | Cat6 |
-| Port 9 | Server | Cat6 |
-| Port 10-24 | Future expansion | - |
+| Port 1 | Router (ether2) | Cat6 (short) |
+| Port 2 | Server | Cat6 |
+| Port 3 | WiFi AP (Ubiquiti UniFi) | Cat6 |
+| Port 4 | HR Room Switch (TL-SG105) | Cat6 (long) |
+| Port 5 | Consultancy Room Switch (TL-SG105) | Cat6 (long) |
+| Port 6-8 | Spare (future expansion) | - |
 
 **Power:** Connect to a reliable power source (UPS recommended).
 
 ---
 
-## Step 3: Position the Server
+## Step 3: Position the HR Room Switch
+
+The TP-Link TL-SG105 is placed in the HR room (shared with Accountant).
+
+**Port Mapping:**
+
+| Port | Connected Device |
+|------|------------------|
+| Port 1 | Cable from Backbone Switch (Port 4) |
+| Port 2 | HR PC1 |
+| Port 3 | HR PC2 |
+| Port 4 | HR Printer |
+| Port 5 | Spare |
+
+**Power:** Standard power adapter (included).
+
+---
+
+## Step 4: Position the Consultancy Room Switch
+
+The TP-Link TL-SG105 is placed in the Consultancy room (shared with IT).
+
+**Port Mapping:**
+
+| Port | Connected Device |
+|------|------------------|
+| Port 1 | Cable from Backbone Switch (Port 5) |
+| Port 2 | IT Laptop |
+| Port 3 | Consultancy Laptop 1 |
+| Port 4 | Consultancy Laptop 2 |
+| Port 5 | Spare |
+
+**Power:** Standard power adapter (included).
+
+---
+
+## Step 5: Position the Server
 
 The Intel N100 mini PC should be placed in a secure location (locked cabinet if possible).
 
 **Connections:**
-- Ethernet cable from server to **Switch Port 9**
+- Ethernet cable from server to **Backbone Switch Port 2**
 - Power adapter
 
 **Initial Access:**
-- Connect a monitor and keyboard for initial setup (or use IPMI if available)
+- Connect a monitor and keyboard for initial setup
 
 ---
 
-## Step 4: Position the WiFi Access Point
+## Step 6: Position the WiFi Access Point
 
 The Ubiquiti UniFi 6 Plus should be placed in a central location for optimal coverage.
 
@@ -71,7 +106,7 @@ The Ubiquiti UniFi 6 Plus should be placed in a central location for optimal cov
 - Desk placement
 
 **Connection:**
-- Ethernet cable from AP to **Switch Port 10** (or any free port)
+- Ethernet cable from AP to **Backbone Switch Port 3**
 
 **PoE (Power over Ethernet):**
 - The UniFi 6 Plus supports PoE
@@ -79,41 +114,41 @@ The Ubiquiti UniFi 6 Plus should be placed in a central location for optimal cov
 
 ---
 
-## Step 5: Position HR Workstations
+## Step 7: Position HR Workstations
 
-Each HR workstation (PC) connects directly to the switch.
+Each HR workstation (PC) connects to the HR Room Switch.
 
 **Connection:**
-- Ethernet cable from PC to assigned switch port (Ports 2-4)
+- Ethernet cable from PC to HR Room Switch (Ports 2-3)
 - Power
 
 ---
 
-## Step 6: Position HR Printer
+## Step 8: Position HR Printer
 
 The HP LaserJet MFP 135a connects to the HR VLAN.
 
 **Connection:**
-- Ethernet cable from printer to **Switch Port 5**
+- Ethernet cable from printer to **HR Room Switch Port 4**
 - Power
 
 **Note:** The printer IP should be static or DHCP-reserved for consistent access.
 
 ---
 
-## Step 7: Position Support Laptops
+## Step 9: Position Consultancy & IT Laptops
 
-Support laptops can be wired or wireless.
+Laptops connect to the Consultancy Room Switch.
 
-**Wired Connection:**
-- Ethernet cable from laptop docking station to assigned switch port (Ports 6-8)
+**Connection:**
+- Ethernet cable from laptop docking station to Consultancy Room Switch (Ports 2-4)
 
-**Wireless Connection:**
-- Connect to the **Office-Support** SSID (configured later)
+**Wireless alternative:**
+- Connect to the **Office-Support** or **Office-HR** SSID (configured later)
 
 ---
 
-## Step 8: Cable Management
+## Step 10: Cable Management
 
 **Best Practices:**
 - Use cable ties to bundle cables
@@ -123,21 +158,23 @@ Support laptops can be wired or wireless.
 
 ---
 
-## Step 9: Power On Sequence
+## Step 11: Power On Sequence
 
 1. **Router** – wait 2 minutes for boot
-2. **Switch** – wait 1 minute
-3. **Server** – wait for OS to load
-4. **WiFi AP** – wait for LED to indicate ready
-5. **Workstations & Printer**
+2. **Backbone Switch (TL-SG108E)** – wait 1 minute
+3. **Room Switches (TL-SG105)** – wait 30 seconds
+4. **Server** – wait for OS to load
+5. **WiFi AP** – wait for LED to indicate ready
+6. **Workstations & Laptops**
 
 ---
 
-## Step 10: Initial Verification
+## Step 12: Initial Verification
 
 **Check LEDs:**
 - Router: WAN LED should be solid/flashing (internet connectivity)
-- Switch: Port LEDs should be green (link established)
+- Backbone Switch: Port LEDs should be green (link established)
+- Room Switches: Port LEDs should be green
 - Server: Power LED on
 - WiFi AP: White LED (ready)
 
@@ -148,44 +185,39 @@ Support laptops can be wired or wireless.
 
 ---
 
-## Update: New Switch Setup (April 6, 2026)
-
-The network has been restructured with dedicated switches for better performance and expandability.
+## Installation Notes (April 6, 2026)
 
 ### New Hardware Added
 
 | Component | Model | Vendor | Purpose |
 |-----------|-------|--------|---------|
 | Backbone Switch | TP-Link TL-SG108E | Senetic (ordered) | Central 8-port managed switch |
-| HR Room Switch | TP-Link TL-SG105 | Bionic (Nicosia) | 5-port unmanaged switch for HR + Accountant |
-| Consultancy Room Switch | TP-Link TL-SG105 | Bionic (Nicosia) | 5-port unmanaged switch for Consultancy + IT |
+| HR Room Switch | TP-Link TL-SG105 | Bionic (Nicosia) | 5-port unmanaged switch |
+| Consultancy Room Switch | TP-Link TL-SG105 | Bionic (Nicosia) | 5-port unmanaged switch |
 
 ### New Topology
 
-### Installation Notes
+Internet → Router → Backbone Switch (TL-SG108E)
 
-1. **Backbone Switch (TL-SG108E):**
-   - Placed near the router
-   - Connected via short Cat6 cable from router ether2 to switch Port 1
-   - No configuration needed for basic operation (plug-and-play)
+From backbone switch:
+- Port 2 → Server
+- Port 3 → WiFi AP
+- Port 4 → HR Room Switch → HR PCs + Printer
+- Port 5 → Consultancy Room Switch → IT + Consultancy Laptops
 
-2. **Room Switches (TL-SG105):**
-   - One installed in HR room, one in Consultancy room
-   - Connected via long Cat6 cables from backbone switch
-   - Completely unmanaged – no configuration required
+### Cable Issues Resolved
 
-3. **Cable Issues Resolved:**
-   - Two faulty Cat6 cables were identified (too short)
-   - Both were replaced with new Cat6 cables
-   - All connections working properly after replacement
+- Two faulty Cat6 cables were identified (too short)
+- Both were replaced with new Cat6 cables
+- All connections working properly after replacement
 
 ### Configuration Changes
 
 | Device | Changes Made |
 |--------|--------------|
 | MikroTik Router | None needed – router only sees the backbone switch |
-| TP-Link TL-SG108E | Default configuration (all ports same VLAN) – works immediately |
-| TP-Link TL-SG105 | No configuration possible (unmanaged) – plug-and-play |
+| TP-Link TL-SG108E | Default configuration – works immediately |
+| TP-Link TL-SG105 | No configuration needed – plug-and-play |
 
 ### Benefits Achieved
 
@@ -194,6 +226,7 @@ The network has been restructured with dedicated switches for better performance
 - Cleaner cable management
 - Professional star topology
 - Future VLAN-ready (on TL-SG108E)
+
 ---
 
 ## Next Steps
@@ -210,3 +243,4 @@ Proceed to [02 - Router Configuration](02-router-config.md) to configure the Mik
 | Switch port not working | Try a different cable, check port status |
 | Server not detected | Verify cable, check link light on switch |
 | WiFi AP not powering | Check PoE injector or switch PoE capability |
+| No link to room switch | Check both ends of long Cat6 cable |
