@@ -15,13 +15,14 @@ This project documents the complete setup of a secure office network for a small
   * **WireGuard VPN** — key-based authentication, unique keys per user
   * **Self-hosted Odoo HR system** — employee database with 2FA
   * **Automated backups** — daily database backups, 30-day retention
-  * **Security hardening** — UFW, Fail2Ban, Snort 3 IDS with community rules
+  * **Security hardening** — UFW, Fail2Ban, Snort 3 IDS with community rules (low-memory mode)
   * **Operational security** — 2FA on Zoho, withdrawal delays, manual approvals
   * **Odoo Accounting** — invoices, payments, VAT reports for Cyprus
   * **Separate WiFi** — HR + Accountant on VLAN 10, Support on VLAN 20 with client isolation
   * **SIEM monitoring** — Wazuh centralizes logs from server, router, and Snort with email alerts
   * **NGFW** — OPNsense + Zenarmor for Layer 7 filtering and application control (added April 2026)
   * **NDR (Network Detection & Response)** — DarkGhost NDR monitors mirrored traffic for anomalies, port scans, TTL spoofing, and behavioral deviations (added May 2026)
+  * **SQL Injection Detection** — Real-time SQL injection detection using TensorFlow + Scapy + Flask (open-source Zenarmor alternative)
 
 ---
 
@@ -34,7 +35,7 @@ This project documents the complete setup of a secure office network for a small
 | **HR Room Switch** | **TP-Link TL-SG105** | **~18** | **5-port unmanaged (April 2026)** |
 | **Consultancy Switch** | **TP-Link TL-SG105** | **~18** | **5-port unmanaged (April 2026)** |
 | WiFi AP | Ubiquiti UniFi 6 Plus | ~110 | Wireless access |
-| Server | Mini PC Intel N100 / 16GB / 512GB SSD | ~300 | Odoo, Wazuh, Snort, DarkGhost NDR |
+| Server | Mini PC Intel N100 / 16GB / 512GB SSD | ~300 | Odoo, Wazuh, Snort (low-memory), DarkGhost NDR, SQL Injection Detector |
 | Printer | HP LaserJet MFP 135a | ~130 | HR printing |
 | Cables | Cat6 + accessories | ~80 | Cabling |
 | **Total** | **~750-800** | | |
@@ -42,7 +43,8 @@ This project documents the complete setup of a secure office network for a small
 All components purchased with official invoices from Cyprus suppliers (Senetic, Bionic, Skroutz).
 
 **Network topology updated April 6, 2026** – New backbone switch architecture implemented.  
-**NDR integration updated May 2026** – DarkGhost deployed with port mirroring.
+**NDR integration updated May 2026** – DarkGhost deployed with port mirroring.  
+**Snort configured in low-memory mode** to run alongside other services.
 
 ---
 
@@ -80,9 +82,22 @@ A SPAN (port mirroring) session is configured on the TP-Link TL-SG108E switch. A
   * **HR System:** Odoo (self-hosted)
   * **Security:** UFW, Fail2Ban, 2FA (Google Authenticator)
   * **Backup:** Automated cron jobs + MySQL dumps
-  * **IDS/IPS:** Snort 3 (added January 2026), OPNsense + Zenarmor (added April 2026)
+  * **IDS/IPS:** Snort 3 (low-memory mode, added January 2026), OPNsense + Zenarmor (added April 2026)
   * **NDR:** DarkGhost NDR (added May 2026) – anomaly detection, port scan, TTL spoofing
+  * **SQL Injection Detection:** SnortML (TensorFlow + Scapy + Flask) – real-time SQLi detection
   * **SIEM:** Wazuh (added January 2026)
+
+---
+
+## Security Detection Layers
+
+| Layer | Tool | Detection Type |
+|-------|------|----------------|
+| **Network IDS** | Snort 3 | Signature-based (known attacks) – low-memory mode |
+| **NGFW / IPS** | OPNsense + Zenarmor | Layer 7 filtering, application control |
+| **NDR** | DarkGhost | Behavioral anomalies, zero-day, port scan, spoofing |
+| **Web App** | SQL Injection Detector (SnortML) | SQL injection in HTTP traffic |
+| **SIEM** | Wazuh | Centralized logs, correlation, alerts |
 
 ---
 
@@ -99,10 +114,11 @@ The complete step-by-step documentation is available in the `setup-guides/` fold
   7. Odoo Installation & HR Configuration
   8. WireGuard Client Setup
   9. 2FA & Backup
-  10. IDS Setup (Snort 3)
+  10. IDS Setup (Snort 3) – low-memory mode
   11. Wazuh SIEM Setup
   12. OPNsense + Zenarmor NGFW Setup
   13. DarkGhost NDR Setup (new)
+  14. SQL Injection Detector Setup (SnortML)
 
 ---
 
@@ -117,6 +133,7 @@ All configuration files are available in the `configs/` folder:
   * `configs/server/fail2ban-config.sh` – Fail2Ban configuration
   * `configs/server/backup-script.sh` – Automated backup script
   * `configs/switch/port-mirroring.txt` – TP-Link port mirroring configuration (new)
+  * `configs/snort/low-memory.conf` – Snort low-memory mode settings
 
 ---
 
@@ -138,9 +155,10 @@ For daily operations and troubleshooting, see the [CHEATSHEET.md](CHEATSHEET.md)
 | **WireGuard VPN** | Key-based authentication, unique keys per user, IP tracking |
 | **Server Hardening** | UFW firewall (allow only HR and VPN subnets), automatic security updates |
 | **Fail2Ban** | Blocks brute-force attacks on SSH and Odoo |
-| **Intrusion Detection** | Snort 3 IDS monitors traffic and logs alerts (low-memory mode) |
+| **Intrusion Detection** | Snort 3 IDS (low-memory mode) monitors traffic and logs alerts |
 | **Next-Generation Firewall** | OPNsense + Zenarmor for Layer 7 filtering, application control, IPS |
 | **NDR (Network Detection & Response)** | DarkGhost analyzes mirrored traffic for behavioral anomalies, port scans, and spoofing |
+| **SQL Injection Detection** | SnortML detects SQL injection in real-time using TensorFlow |
 | **SIEM** | Wazuh centralizes logs from server, OPNsense, Snort, and DarkGhost with email alerts |
 | **Traffic Visibility** | SPAN (port mirroring) on TP-Link switch sends all inter-VLAN traffic to DarkGhost |
 | **Backup** | Daily automated database backups, 30-day retention |
@@ -174,7 +192,7 @@ For daily operations and troubleshooting, see the [CHEATSHEET.md](CHEATSHEET.md)
   * Three isolated networks: 
     * VLAN 10 (HR) — can access server only
     * VLAN 20 (Support) — internet only, no access to HR or server
-    * VLAN 30 (Server) — Odoo HR system, Wazuh, Snort, DarkGhost NDR
+    * VLAN 30 (Server) — Odoo HR system, Wazuh, Snort (low-memory), DarkGhost NDR, SQL Injection Detector
 
 **Remote Access:**
 
@@ -195,6 +213,7 @@ For daily operations and troubleshooting, see the [CHEATSHEET.md](CHEATSHEET.md)
 | Phishing attack (like crypto incident) | Quick response runbook, funds recovery procedure |
 | Malware or malicious website | Zenarmor blocks at gateway (Layer 7 filtering) |
 | Zero-day attack or unusual behavior | DarkGhost NDR detects anomalies via behavioral baseline |
+| SQL injection on web apps | SnortML detects and blocks malicious payloads |
 
 ---
 
@@ -216,7 +235,7 @@ Operational procedures and security policies:
   * Odoo permissions are granular – I created two roles: HR Manager (full access) and HR Viewer (no salary data).
   * 2FA in Odoo must be enabled per user – Not a global setting, so I had to configure each user manually.
   * Running OPNsense as a VM on the existing server is possible but requires careful resource allocation (RAM/CPU).
-  * Snort can be set to low-memory mode to coexist with other services.
+  * Snort can be set to low-memory mode to coexist with other services – I used `detect` engine profile to reduce RAM usage.
   * **Port mirroring (SPAN) is essential for NDR** – Without it, DarkGhost only sees traffic to/from the server, not inter-VLAN traffic. Configuring this on the TP-Link switch was simple once I identified the correct source port (trunk port carrying all VLANs).
 
 ---
@@ -256,7 +275,7 @@ I am actively building my cybersecurity knowledge while working full-time. This 
   * ✅ TryHackMe Pre Security
   * ✅ TryHackMe SEC0
   * ✅ TryHackMe SEC1
-  * ✅ This project — full network infrastructure with VLANs, VPN, IDS, SIEM, NGFW, and NDR
+  * ✅ This project — full network infrastructure with VLANs, VPN, IDS, SIEM, NGFW, NDR, and SQL injection detection
 
 ### In Progress
 
