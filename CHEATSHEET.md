@@ -297,10 +297,10 @@ sudo systemctl start snort
 sudo systemctl start odoo
 
 # Start DarkGhost (two terminals)
-cd ~/darkghost && source venv/bin/activate && python3 dashboard.py
+cd ~/darkghost && source venv/bin/activate && python3 dashboard.py  | 
 sudo /home/user/darkghost/venv/bin/python3 /home/user/darkghost/main.py
 
 # Start SQL Detector (two terminals)
-cd ~/sql-injection-detector && source venv/bin/activate && python3 ml_service.py
+cd ~/sql-injection-detector && source venv/bin/activate && python3 ml_service.py  | 
 cd ~/sql-injection-detector && source venv/bin/activate && python3 dashboard.py
 
