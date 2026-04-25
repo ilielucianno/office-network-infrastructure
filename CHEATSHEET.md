@@ -4,6 +4,46 @@ Quick reference for daily operations and monitoring.
 
 ---
 
+## DarkGhost NDR (New)
+
+| Action | Command |
+|--------|---------|
+| Check DarkGhost dashboard | Open browser: `http://SERVER_IP:8081` |
+| Check DarkGhost process | `ps aux \| grep -E "python.*darkghost"` |
+| View live DarkGhost alerts | `sudo tail -f /var/log/darkghost/alerts.log` |
+| View recent alerts (JSON) | `curl -s http://localhost:8081/api/data \| jq '.alerts[-5:]'` |
+| Check packet count | `curl -s http://localhost:8081/api/data \| jq '.stats.total_packets'` |
+| Start DarkGhost dashboard | `cd ~/darkghost && source venv/bin/activate && python3 dashboard.py` |
+| Start DarkGhost main engine | `sudo /home/user/darkghost/venv/bin/python3 /home/user/darkghost/main.py` |
+| Reset DarkGhost baseline | `rm ~/darkghost/baseline.json` |
+| DarkGhost log file | `/var/log/darkghost/alerts.log` |
+
+### What DarkGhost Detects
+
+| Detection | Risk Level | Example |
+|-----------|------------|---------|
+| Port scan | CRITICAL | 10+ ports scanned in short time |
+| Sensitive port (SSH, RDP, 4444) | HIGH | Device uses SSH for first time |
+| Large packet (>10x normal) | HIGH | Possible data exfiltration |
+| Night traffic (00:00-06:00) | MEDIUM | Unusual activity hours |
+| TTL change (spoofing) | CRITICAL | MAC/IP spoofing detected |
+
+---
+
+## Port Mirroring (SPAN) on TP-Link TL-SG108E (New)
+
+| Action | Location / Command |
+|--------|---------------------|
+| Access switch web UI | `http://192.168.0.1` (or configured IP) |
+| Default credentials | admin / (no password) |
+| Enable port mirroring | Monitoring → Port Mirror → Enable |
+| Mirroring Port (Destination) | Port 8 (server connected here) |
+| Mirrored Ports (Source) | Port 1 (trunk port with all VLANs) |
+| Mirror Mode | Both (TX and RX) |
+| Verify mirroring works | `sudo tcpdump -i eth0 -c 10` (should see traffic from HR and Support IPs) |
+
+---
+
 ## Wazuh SIEM
 
 | Action | Command |
@@ -123,6 +163,7 @@ Quick reference for daily operations and monitoring.
 | Ping test | `ping IP_ADDRESS` |
 | Check route | `traceroute IP_ADDRESS` |
 | Check DNS | `nslookup google.com` |
+| Verify DarkGhost sees inter-VLAN traffic | `sudo tcpdump -i eth0 -c 10` (look for HR/Support IPs) |
 
 ---
 
@@ -146,6 +187,8 @@ Quick reference for daily operations and monitoring.
 | Odoo not responding | `sudo systemctl status odoo` + `sudo tail -f /var/log/odoo/odoo.log` |
 | OPNsense VM won't start | `VBoxManage showvminfo OPNsense-Test` |
 | Zenarmor not running | Check WebGUI: Zenarmor → Dashboard |
+| DarkGhost no traffic | Verify port mirroring: `sudo tcpdump -i eth0 -c 10` |
+| DarkGhost not alerting | Check baseline: `ls -la ~/darkghost/baseline.json` |
 
 ---
 
@@ -167,8 +210,10 @@ Quick reference for daily operations and monitoring.
 - [ ] Wazuh active: `sudo systemctl status wazuh-manager`
 - [ ] Snort active: `sudo systemctl status snort`
 - [ ] Odoo active: `sudo systemctl status odoo`
+- [ ] DarkGhost active: check `http://SERVER_IP:8081`
 - [ ] OPNsense VM running: `VBoxManage showvminfo OPNsense-Test | grep State`
 - [ ] New alerts in Wazuh: `sudo tail -10 /var/ossec/logs/alerts/alerts.json`
+- [ ] New alerts in DarkGhost: `sudo tail -10 /var/log/darkghost/alerts.log`
 - [ ] No suspicious users: `who`
 - [ ] Recent backup verified: `ls -la /backup/`
 
@@ -179,6 +224,7 @@ Quick reference for daily operations and monitoring.
 - [ ] System updates: `sudo apt update && sudo apt upgrade -y`
 - [ ] Snort rule updates (manual or script)
 - [ ] Check Zenarmor logs for unexpected blocks
+- [ ] Check DarkGhost anomaly statistics
 - [ ] Check disk space: `df -h`
 - [ ] Check RAM usage: `free -h`
 
@@ -192,5 +238,7 @@ Quick reference for daily operations and monitoring.
 | Odoo down | `sudo systemctl restart odoo` |
 | Wazuh down | `sudo systemctl restart wazuh-manager` |
 | Snort down | `sudo systemctl restart snort` |
+| DarkGhost down | Restart dashboard and main engine (see DarkGhost section) |
 | OPNsense VM down | `VBoxManage startvm OPNsense-Test --type headless` |
 | VPN down | Check MikroTik router, restart WireGuard |
+| No DarkGhost traffic | Check port mirroring on TP-Link switch |
