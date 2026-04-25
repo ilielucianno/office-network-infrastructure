@@ -283,24 +283,91 @@ Quick reference for daily operations and monitoring.
 
 ---
 
-## Quick Service Restart (All at Once)
+---
 
-# Stop all
-sudo systemctl stop wazuh-manager snort odoo
-pkill -f "python.*darkghost"
-pkill -f "python.*ml_service"
-pkill -f "python.*sql.*dashboard"
+## DarkGhost NDR
 
-# Start in order
-sudo systemctl start wazuh-manager
-sudo systemctl start snort
-sudo systemctl start odoo
+| Action | Command |
+|--------|---------|
+| Check DarkGhost dashboard | Open browser: `http://SERVER_IP:8081` |
+| View live DarkGhost alerts | `sudo tail -f /var/log/darkghost/alerts.log` |
+| Start DarkGhost dashboard | `cd ~/darkghost && source venv/bin/activate && python3 dashboard.py` |
+| Start DarkGhost main engine | `sudo /home/user/darkghost/venv/bin/python3 /home/user/darkghost/main.py` |
+| Reset DarkGhost baseline | `rm ~/darkghost/baseline.json` |
 
-# Start DarkGhost (two terminals)
-cd ~/darkghost && source venv/bin/activate && python3 dashboard.py  | 
-sudo /home/user/darkghost/venv/bin/python3 /home/user/darkghost/main.py
+### What DarkGhost Detects
 
-# Start SQL Detector (two terminals)
-cd ~/sql-injection-detector && source venv/bin/activate && python3 ml_service.py  | 
-cd ~/sql-injection-detector && source venv/bin/activate && python3 dashboard.py
+| Detection | Risk Level |
+|-----------|------------|
+| Port scan | CRITICAL |
+| Sensitive port (SSH, RDP, 4444) | HIGH |
+| Large packet (>10x normal) | HIGH |
+| Night traffic (00:00-06:00) | MEDIUM |
+| TTL change (spoofing) | CRITICAL |
+
+---
+
+## SQL Injection Detector (SnortML)
+
+| Action | Command |
+|--------|---------|
+| Start ML service | `cd ~/sql-injection-detector && source venv/bin/activate && python3 ml_service.py` |
+| Start SQL dashboard | `cd ~/sql-injection-detector && source venv/bin/activate && python3 dashboard.py` |
+| Check SQL dashboard | Open browser: `http://SERVER_IP:8082` |
+| Test SQL injection | `curl -X POST http://localhost:5000/predict -H "Content-Type: application/json" -d '{"payload": "1 OR 1=1"}'` |
+
+### What SQL Detector Detects
+
+| Attack Type | Status |
+|-------------|--------|
+| Tautology (`1' OR '1'='1`) | BLOCK |
+| UNION attack | BLOCK |
+| Time-based | BLOCK |
+| Stacked queries | BLOCK |
+| URL encoded | BLOCK |
+
+---
+
+## Port Mirroring (SPAN) on TP-Link TL-SG108E
+
+| Action | Setting |
+|--------|---------|
+| Access switch web UI | `http://192.168.0.1` |
+| Enable port mirroring | Monitoring → Port Mirror → Enable |
+| Mirroring Port (Destination) | Port 8 (server) |
+| Mirrored Ports (Source) | Port 1 (trunk port) |
+| Mirror Mode | Both |
+| Verify mirroring | `sudo tcpdump -i eth0 -c 10` |
+
+---
+
+## Snort Low-Memory Mode
+
+| Setting | Value |
+|---------|-------|
+| Engine profile | `detect` (instead of `max`) |
+| Hyperscan mode | disabled |
+| Packet pool size | 256 |
+| Flow cache limit | 10000 |
+
+---
+
+## NDR Coverage Map
+
+| Traffic Flow | With Port Mirroring |
+|--------------|---------------------|
+| HR → Server | Yes |
+| Support → Internet | No |
+| HR ↔ Support | **Yes** |
+| Support → HR | **Yes** |
+
+---
+
+## Quick Aliases (add to ~/.bashrc)
+
+alias darkghost-dash='cd ~/darkghost && source venv/bin/activate && python3 dashboard.py'
+alias darkghost-main='sudo /home/user/darkghost/venv/bin/python3 /home/user/darkghost/main.py'
+alias sql-ml='cd ~/sql-injection-detector && source venv/bin/activate && python3 ml_service.py'
+alias sql-dash='cd ~/sql-injection-detector && source venv/bin/activate && python3 dashboard.py'
+alias darkghost-logs='tail -f /var/log/darkghost/alerts.log'
 
