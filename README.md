@@ -12,7 +12,7 @@ The business operates online casinos (branded separately, no connection to this 
 
 This infrastructure started on a budget Mini PC (Intel N100, 16GB RAM) and was later upgraded to a more powerful server to handle multiple VMs and security services.
 
-### Original Server (2024 - 2026)
+### Original Server (2023 - 2026)
 - **Model:** Mini PC Intel N100
 - **RAM:** 16GB (soldered, not upgradeable)
 - **Storage:** 512GB SSD
@@ -73,7 +73,7 @@ OPNsense runs as a virtual machine on the same Ubuntu server. This allows the NG
 | Consultancy Switch | TP-Link TL-SG105 | ~18 | 5-port unmanaged |
 | WiFi AP | Ubiquiti UniFi 6 Plus | ~110 | Wireless access |
 | **Main Server (current)** | **Geekom A9 Max (AMD Ryzen AI 9, 32GB RAM, 1TB SSD)** | **~1,140** | **Runs Ubuntu + Wazuh + DarkGhost + SQL Detector + OPNsense VM** |
-| Backup Server (retired) | Mini PC Intel N100 (16GB RAM, 512GB SSD) | ~300 | Original server, kept for backup |
+| Backup Server (retired) | Mini PC Intel N100 (16GB RAM, 512GB SSD) | ~300 | Original server (2023-2026), kept for backup |
 | Printer | HP LaserJet MFP 135a | ~130 | HR printing |
 | Cables | Cat6 + accessories | ~80 | Cabling |
 | **Total (current hardware)** | | **~1,600** | |
@@ -81,8 +81,8 @@ OPNsense runs as a virtual machine on the same Ubuntu server. This allows the NG
 **All components purchased with official invoices from EU suppliers (Amazon ES, Senetic, Bionic, Skroutz).**
 
 **Timeline:**
-- March 2026: Backbone switch architecture implemented.
-- March 2026: OPNsense deployed as VM on the server.
+- Dec 2025: Backbone switch architecture implemented.
+- Jan 2026: OPNsense deployed as VM on the server.
 - April 2026: DarkGhost integrated with port mirroring.
 - April 2026: Server upgraded from Intel N100 to Geekom A9 Max.
 
@@ -182,7 +182,7 @@ The complete step-by-step documentation is available in the setup-guides/ folder
 
 ## Migration Notes (from N100 to Geekom A9 Max)
 
-When upgrading from the old Intel N100 server to the new Geekom A9 Max:
+When upgrading from the old Intel N100 server (2023-2026) to the new Geekom A9 Max:
 
 1. **Exported all VirtualBox VMs** as .ova files from the old server
 2. **Installed Ubuntu 22.04 LTS** on the new Geekom
@@ -313,7 +313,7 @@ Completed:
 - TryHackMe SEC0
 - TryHackMe SEC1
 - This project – full network infrastructure with VLANs, VPN, IDS, SIEM, NGFW, NDR, and SQL injection detection
-- Server migration from Intel N100 to Geekom A9 Max
+- Server migration from Intel N100 to Geekom A9 Max (2023-2026)
 
 In Progress:
 - Network+ (CompTIA) – 50% completed
