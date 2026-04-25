@@ -304,24 +304,3 @@ sudo /home/user/darkghost/venv/bin/python3 /home/user/darkghost/main.py
 cd ~/sql-injection-detector && source venv/bin/activate && python3 ml_service.py
 cd ~/sql-injection-detector && source venv/bin/activate && python3 dashboard.py
 
-Useful Aliases (add to ~/.bashrc)
-
-alias darkghost-dash='cd ~/darkghost && source venv/bin/activate && python3 dashboard.py'
-alias darkghost-main='sudo /home/user/darkghost/venv/bin/python3 /home/user/darkghost/main.py'
-alias sql-ml='cd ~/sql-injection-detector && source venv/bin/activate && python3 ml_service.py'
-alias sql-dash='cd ~/sql-injection-detector && source venv/bin/activate && python3 dashboard.py'
-alias wazuh-logs='tail -f /var/ossec/logs/alerts/alerts.json'
-alias darkghost-logs='tail -f /var/log/darkghost/alerts.log'
-alias snort-logs='tail -f /var/log/snort/alert.txt'
-alias wazuh-restart='sudo systemctl restart wazuh-manager'
-alias snort-restart='sudo systemctl restart snort'
-
-NDR Coverage Map
-
-Traffic Flow	DarkGhost Visibility	Without Port Mirroring
-HR → Server	✅ Yes (server sees it)	✅ Yes
-Support → Internet	❌ No (doesn't reach server)	❌ No
-HR ↔ Support	✅ Yes (mirrored)	❌ No
-Support → HR	✅ Yes (mirrored)	❌ No
-Server → Internet	✅ Yes	✅ Yes
-Key insight: Port mirroring on the switch is essential for detecting lateral movement between HR and Support VLANs.
