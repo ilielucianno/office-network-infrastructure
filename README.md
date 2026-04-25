@@ -2,17 +2,40 @@
 
 ## Overview
 
-This project documents the complete setup of a secure office network for a small company (3 HR offices + 10-15 remote support agents). The infrastructure is built on a budget of under €1000 and implements enterprise-grade security practices including VLAN isolation, firewall rules, VPN access, and a self-hosted HR management system.
+This project documents the complete setup of a secure office network for a small company (3 HR offices + 10-15 remote support agents). The infrastructure implements enterprise-grade security practices including VLAN isolation, firewall rules, VPN access, and a self-hosted HR management system.
 
 The business operates online casinos (branded separately, no connection to this infrastructure). All financial operations (withdrawals, bonuses) are protected by additional layers: 2FA on Zoho, IP verification, 7-21 day withdrawal delays, and manual approval by owners.
 
 ---
 
+## Upgrade History
+
+This infrastructure started on a budget Mini PC (Intel N100, 16GB RAM) and was later upgraded to a more powerful server to handle multiple VMs and security services.
+
+### Original Server (2024 - 2026)
+- **Model:** Mini PC Intel N100
+- **RAM:** 16GB (soldered, not upgradeable)
+- **Storage:** 512GB SSD
+- **Cost:** ~€300
+- **Limitation:** Could not run all services (Wazuh + OPNsense VM + DarkGhost + SQL Detector) simultaneously due to RAM constraints.
+
+### Current Server (2026 - present)
+- **Model:** Geekom A9 Max
+- **CPU:** AMD Ryzen AI 9 HX 370 (12 cores, much more powerful than N100)
+- **RAM:** 32GB DDR5
+- **Storage:** 1TB NVMe SSD (upgradeable to 2TB)
+- **Cost:** €1,140
+- **Why upgraded:** Needed more RAM and CPU power to run OPNsense as VM alongside Wazuh, DarkGhost, and SQL Detector without performance issues.
+
+All services were migrated using VirtualBox OVA export/import. The new server runs Ubuntu 22.04 LTS with SVM Mode enabled in BIOS for hardware virtualization.
+
+---
+
 ## Server Architecture (All-in-One)
 
-All security services run on the same physical server (Mini PC Intel N100, 16GB RAM, 512GB SSD):
+All security services run on the same physical server (Geekom A9 Max):
 
-- Ubuntu Server (base OS)
+- Ubuntu Server 22.04 LTS (base OS)
 - Wazuh SIEM (native service, port 443)
 - DarkGhost NDR (Python script, port 8081)
 - SQL Injection Detector (Python script, port 8082)
@@ -49,16 +72,19 @@ OPNsense runs as a virtual machine on the same Ubuntu server. This allows the NG
 | HR Room Switch | TP-Link TL-SG105 | ~18 | 5-port unmanaged |
 | Consultancy Switch | TP-Link TL-SG105 | ~18 | 5-port unmanaged |
 | WiFi AP | Ubiquiti UniFi 6 Plus | ~110 | Wireless access |
-| Server | Mini PC Intel N100 / 16GB / 512GB SSD | ~300 | Runs Ubuntu + Wazuh + DarkGhost + SQL Detector + OPNsense VM |
+| **Main Server (current)** | **Geekom A9 Max (AMD Ryzen AI 9, 32GB RAM, 1TB SSD)** | **~1,140** | **Runs Ubuntu + Wazuh + DarkGhost + SQL Detector + OPNsense VM** |
+| Backup Server (retired) | Mini PC Intel N100 (16GB RAM, 512GB SSD) | ~300 | Original server, kept for backup |
 | Printer | HP LaserJet MFP 135a | ~130 | HR printing |
 | Cables | Cat6 + accessories | ~80 | Cabling |
-| Total | | ~750-800 | |
+| **Total (current hardware)** | | **~1,600** | |
 
-All components purchased with official invoices from Cyprus suppliers (Senetic, Bionic, Skroutz).
+**All components purchased with official invoices from EU suppliers (Amazon ES, Senetic, Bionic, Skroutz).**
 
-Network topology updated April 6, 2026 – New backbone switch architecture implemented.
-OPNsense deployed as VM on the same server – No extra hardware needed.
-DarkGhost integrated May 2026 – Port mirroring configured for full traffic visibility.
+**Timeline:**
+- April 2026: Backbone switch architecture implemented.
+- April 2026: OPNsense deployed as VM on the server.
+- May 2026: DarkGhost integrated with port mirroring.
+- May 2026: Server upgraded from Intel N100 to Geekom A9 Max.
 
 ---
 
@@ -154,6 +180,21 @@ The complete step-by-step documentation is available in the setup-guides/ folder
 
 ---
 
+## Migration Notes (from N100 to Geekom A9 Max)
+
+When upgrading from the old Intel N100 server to the new Geekom A9 Max:
+
+1. **Exported all VirtualBox VMs** as .ova files from the old server
+2. **Installed Ubuntu 22.04 LTS** on the new Geekom
+3. **Enabled SVM Mode** in BIOS (AMD virtualization, equivalent to Intel VT-x)
+4. **Imported all .ova files** into VirtualBox on the new server
+5. **Reconfigured static IPs** for the Ubuntu host and all VMs (took extra time due to driver differences)
+6. **Reinstalled necessary packages** (scapy, flask, tensorflow, etc.) in the Python virtual environments
+
+Total migration time was approximately 2-3 days due to driver configuration and IP reassignment.
+
+---
+
 ## Configuration Files
 
 All configuration files are available in the configs/ folder:
@@ -209,66 +250,20 @@ For daily operations and troubleshooting, see the CHEATSHEET.md.
 | Offboarding Process | All accounts disabled immediately when employee leaves |
 | Data Breach Monitoring | Google alerts for leaked credentials – immediate password reset |
 
-### Security Architecture Overview
-
-External Layer (Internet):
-- Casino websites (Malta/Curacao licenses) – no connection to company infrastructure
-- Zoho CRM (cloud) – protected by 2FA and IP verification
-
-Internal Layer (Infrastructure):
-- OPNsense VM – Layer 7 filtering, IPS, application control (on same server via VirtualBox)
-- MikroTik Router – VPN server, VLAN routing
-- TP-Link Switch – VLAN trunking, port isolation, port mirroring (SPAN)
-- Three isolated networks:
-  - VLAN 10 (HR) – can access server only
-  - VLAN 20 (Support) – internet only, no access to HR or server
-  - VLAN 30 (Server) – Odoo, Wazuh, Snort (low-memory), DarkGhost NDR, SQL Detector
-
-Remote Access:
-- WireGuard VPN – key-based authentication
-- Remote agents can only access Odoo server, nothing else
-
-### Why This Architecture Works
-
-| Threat | How We Block It |
-|--------|------------------|
-| Attacker finds casino website | No link to company infrastructure |
-| Attacker compromises Zoho password | 2FA + IP verification blocks login |
-| Attacker gets into Zoho | Support roles cannot withdraw money |
-| Attacker requests withdrawal | 7-21 day delay + daily review + manual approval |
-| Attacker compromises support laptop | VLAN isolation – cannot reach HR or Server |
-| Attacker tries to brute-force server | Fail2Ban blocks after 3 attempts |
-| Attacker steals physical hardware | Server is locked, data is encrypted, backups offsite |
-| Phishing attack (like crypto incident) | Quick response runbook, funds recovery procedure |
-| Malware or malicious website | Zenarmor blocks at gateway (Layer 7 filtering) |
-| Zero-day attack or unusual behavior | DarkGhost NDR detects anomalies via behavioral baseline |
-| SQL injection on web apps | SnortML detects and blocks malicious payloads |
-
 ---
 
 ## Why OPNsense as VM on the Same Server
 
 Running OPNsense as a virtual machine on the same Ubuntu server allows:
-- No extra hardware – the existing Mini PC is powerful enough (Intel N100, 16GB RAM)
+- No extra hardware – the Geekom A9 Max is powerful enough (12-core AMD CPU, 32GB RAM)
 - Centralized management – all security tools on one physical box
 - Cost effective – no need to buy a separate firewall appliance
 - Easy backups – the entire VM can be backed up and restored
 
 The server has enough resources to run all services simultaneously:
-- 4 CPU cores – sufficient for OPNsense + Ubuntu services
-- 16GB RAM – allocated: 4GB to OPNsense VM, 12GB to Ubuntu
-- 512GB SSD – enough for logs, alerts, and VM storage
-
----
-
-## Operations and Security Policies
-
-Operational procedures and security policies:
-
-1. Zoho Security (docs/Zoho Security.md)
-2. Incident Response Runbook (docs/Incident Response Runbook.md)
-3. Backup Procedures (docs/Backup Procedures.md)
-4. Accounts and Access Policy (docs/Accounts and Access Policy.md)
+- 12 CPU cores – more than sufficient for OPNsense + Ubuntu services
+- 32GB RAM – allocated: 8GB to OPNsense VM, 24GB to Ubuntu
+- 1TB SSD – enough for logs, alerts, and VM storage (upgradeable to 2TB)
 
 ---
 
@@ -278,9 +273,10 @@ Operational procedures and security policies:
 - WireGuard setup is simple but key management must be organized – I created a spreadsheet for client keys.
 - Odoo permissions are granular – I created two roles: HR Manager (full access) and HR Viewer (no salary data).
 - 2FA in Odoo must be enabled per user – Not a global setting, so I had to configure each user manually.
-- Running OPNsense as a VM on the existing server is possible but requires careful resource allocation (RAM/CPU). I allocated 4GB to OPNsense and left 12GB for Ubuntu.
+- Running OPNsense as a VM on the existing server is possible but requires careful resource allocation. On the Geekom, I allocated 8GB RAM to OPNsense and left 24GB for Ubuntu.
 - Snort can be set to low-memory mode to coexist with other services – I used detect engine profile to reduce RAM usage.
-- Port mirroring (SPAN) is essential for NDR – Without it, DarkGhost only sees traffic to/from the server, not inter-VLAN traffic. Configuring this on the TP-Link switch was simple once I identified the correct source port (trunk port carrying all VLANs).
+- Port mirroring (SPAN) is essential for NDR – Without it, DarkGhost only sees traffic to/from the server, not inter-VLAN traffic.
+- **Server migration takes time** – Exporting VMs as .ova is fast, but reconfiguring IPs and drivers on the new hardware can take 2-3 days.
 
 ---
 
@@ -317,6 +313,7 @@ Completed:
 - TryHackMe SEC0
 - TryHackMe SEC1
 - This project – full network infrastructure with VLANs, VPN, IDS, SIEM, NGFW, NDR, and SQL injection detection
+- Server migration from Intel N100 to Geekom A9 Max
 
 In Progress:
 - Network+ (CompTIA) – 50% completed
@@ -326,7 +323,7 @@ Next Steps (Next 6 Months):
 - Complete Security+ and Network+ certifications
 - Start Cloud Security (AWS / Azure fundamentals)
 - Document more operational procedures
-- Deploy OPNsense to dedicated hardware (if needed)
+- Upgrade server storage to 2TB if needed
 
 Why I Built This:
 I've been working in IT infrastructure for 10+ years, managing networks, hardware, and teams. Recently, I realized that what I was already doing (firewalls, VLANs, VPNs, incident response) has a name: cybersecurity. Now I'm formalizing my knowledge through certifications and documenting real projects to demonstrate my skills.
