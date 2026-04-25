@@ -1,6 +1,7 @@
 # 09 - Intrusion Detection System (Snort 3) Setup
 
 This guide covers the installation and configuration of Snort 3 as an Intrusion Detection System (IDS) on the Ubuntu server. Snort monitors network traffic for suspicious activity and logs alerts.
+Down low mode settings (active now)
 
 ---
 
@@ -255,3 +256,52 @@ Integrate Snort alerts with Wazuh SIEM for centralized monitoring
 Add more custom rules based on your network patterns
 
 Schedule monthly rule updates
+
+## Snort Low-Memory Mode
+
+Since the server runs multiple services (Odoo, Wazuh, DarkGhost, SQL Detector), Snort is configured in low-memory mode to coexist without resource contention.
+
+###### Low-Memory Settings
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| `engine_profile` | `detect` | Lower memory usage (vs `max` profile) |
+| `hyperscan` | `disabled` | Disable Hyperscan pattern matching |
+| `packet_pool_size` | `256` | Reduce packet pool from default 1024 |
+| `flow_cache_limit` | `10000` | Limit flow cache entries |
+| `flow_cache_ttl` | `60` | Shorter TTL for flow cache |
+
+### Configuration Snippet for snort.lua
+
+Add or modify these settings in `/etc/snort/snort.lua`:
+
+```lua
+-- Low-memory mode settings
+detection = {
+    engine_profile = "detect",
+    search_engine = {
+        hyperscan = {
+            enabled = false
+        }
+    }
+}
+
+flow = {
+    cache = {
+        limit = 10000,
+        ttl = 60
+    }
+}
+
+packets = {
+    pool = {
+        size = 256
+    }
+}
+
+Verify Memory Usage
+
+bash
+ps aux | grep snort
+free -h
+Expected memory for Snort in low-memory mode: ~200-400 MB (compared to 1-2 GB in normal mode).
