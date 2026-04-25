@@ -355,21 +355,8 @@ python3 dashboard.py
 | Server → Internet  | Yes                        | Yes                    |
 
 **Key insight:**  
+
 Port mirroring on the switch is essential for detecting lateral movement between HR and Support VLANs.
-
-
-
-## Useful Aliases (add to `~/.bashrc`)
-
-alias darkghost-dash='cd ~/darkghost && source venv/bin/activate && python3 dashboard.py'
-alias darkghost-main='sudo /home/user/darkghost/venv/bin/python3 /home/user/darkghost/main.py'
-alias sql-ml='cd ~/sql-injection-detector && source venv/bin/activate && python3 ml_service.py'
-alias sql-dash='cd ~/sql-injection-detector && source venv/bin/activate && python3 dashboard.py'
-alias wazuh-logs='tail -f /var/ossec/logs/alerts/alerts.json'
-alias darkghost-logs='tail -f /var/log/darkghost/alerts.log'
-alias snort-logs='tail -f /var/log/snort/alert.txt'
-alias wazuh-restart='sudo systemctl restart wazuh-manager'
-alias snort-restart='sudo systemctl restart snort'
 
 ## Emergency Recovery
 
