@@ -4,7 +4,7 @@ Quick reference for daily operations and monitoring.
 
 ---
 
-## DarkGhost NDR (New)
+## DarkGhost NDR
 
 | Action | Command |
 |--------|---------|
@@ -30,7 +30,29 @@ Quick reference for daily operations and monitoring.
 
 ---
 
-## Port Mirroring (SPAN) on TP-Link TL-SG108E (New)
+## SQL Injection Detector (SnortML)
+
+| Action | Command |
+|--------|---------|
+| Start ML service | `cd ~/sql-injection-detector && source venv/bin/activate && python3 ml_service.py` |
+| Start SQL detector dashboard | `cd ~/sql-injection-detector && source venv/bin/activate && python3 dashboard.py` |
+| Check SQL detector dashboard | Open browser: `http://SERVER_IP:8082` |
+| Test SQL injection detection | `curl -X POST http://localhost:5000/predict -H "Content-Type: application/json" -d '{"payload": "1 OR 1=1"}'` |
+| View SQL detector logs | `tail -f ~/sql-injection-detector/events.log` |
+
+### What SQL Detector Detects
+
+| Attack Type | Example | Status |
+|-------------|---------|--------|
+| Tautology | `1' OR '1'='1` | ✅ Blocked |
+| UNION attack | `1 UNION SELECT * FROM users` | ✅ Blocked |
+| Time-based | `1' AND SLEEP(5)--` | ✅ Blocked |
+| Stacked queries | `1; DROP TABLE users--` | ✅ Blocked |
+| URL encoded | `1%27%20OR%20%271%27=%271` | ✅ Blocked |
+
+---
+
+## Port Mirroring (SPAN) on TP-Link TL-SG108E
 
 | Action | Location / Command |
 |--------|---------------------|
@@ -58,7 +80,7 @@ Quick reference for daily operations and monitoring.
 
 ---
 
-## Snort IDS
+## Snort IDS (Low-Memory Mode)
 
 | Action | Command |
 |--------|---------|
@@ -69,6 +91,16 @@ Quick reference for daily operations and monitoring.
 | Stop Snort | `sudo systemctl stop snort` |
 | Start Snort | `sudo systemctl start snort` |
 | Test Snort configuration | `sudo -u snort snort -c /etc/snort/snort.lua -T` |
+| **Low-memory settings** | `detect` engine profile in `snort.lua` |
+
+### Snort Low-Memory Configuration
+
+| Setting | Value |
+|---------|-------|
+| Engine profile | `detect` (instead of `max`) |
+| Hyperscan mode | disabled |
+| Packet pool size | reduced to 256 |
+| Flow cache limit | reduced to 10000 |
 
 ---
 
@@ -189,6 +221,8 @@ Quick reference for daily operations and monitoring.
 | Zenarmor not running | Check WebGUI: Zenarmor → Dashboard |
 | DarkGhost no traffic | Verify port mirroring: `sudo tcpdump -i eth0 -c 10` |
 | DarkGhost not alerting | Check baseline: `ls -la ~/darkghost/baseline.json` |
+| SQL detector not responding | `curl http://localhost:5000/health` |
+| Snort high memory usage | Check `detect` profile is enabled |
 
 ---
 
@@ -211,6 +245,7 @@ Quick reference for daily operations and monitoring.
 - [ ] Snort active: `sudo systemctl status snort`
 - [ ] Odoo active: `sudo systemctl status odoo`
 - [ ] DarkGhost active: check `http://SERVER_IP:8081`
+- [ ] SQL Detector active: check `http://SERVER_IP:8082`
 - [ ] OPNsense VM running: `VBoxManage showvminfo OPNsense-Test | grep State`
 - [ ] New alerts in Wazuh: `sudo tail -10 /var/ossec/logs/alerts/alerts.json`
 - [ ] New alerts in DarkGhost: `sudo tail -10 /var/log/darkghost/alerts.log`
@@ -225,8 +260,9 @@ Quick reference for daily operations and monitoring.
 - [ ] Snort rule updates (manual or script)
 - [ ] Check Zenarmor logs for unexpected blocks
 - [ ] Check DarkGhost anomaly statistics
+- [ ] Check SQL detector detection logs
 - [ ] Check disk space: `df -h`
-- [ ] Check RAM usage: `free -h`
+- [ ] Check RAM usage (Snort low-memory confirmed): `free -h`
 
 ---
 
@@ -239,6 +275,53 @@ Quick reference for daily operations and monitoring.
 | Wazuh down | `sudo systemctl restart wazuh-manager` |
 | Snort down | `sudo systemctl restart snort` |
 | DarkGhost down | Restart dashboard and main engine (see DarkGhost section) |
+| SQL Detector down | Restart ML service and dashboard (see SQL Detector section) |
 | OPNsense VM down | `VBoxManage startvm OPNsense-Test --type headless` |
 | VPN down | Check MikroTik router, restart WireGuard |
 | No DarkGhost traffic | Check port mirroring on TP-Link switch |
+| High Snort memory | Revert to `detect` profile in `snort.lua` |
+
+---
+
+## Quick Service Restart (All at Once)
+
+# Stop all
+sudo systemctl stop wazuh-manager snort odoo
+pkill -f "python.*darkghost"
+pkill -f "python.*ml_service"
+pkill -f "python.*sql.*dashboard"
+
+# Start in order
+sudo systemctl start wazuh-manager
+sudo systemctl start snort
+sudo systemctl start odoo
+
+# Start DarkGhost (two terminals)
+cd ~/darkghost && source venv/bin/activate && python3 dashboard.py
+sudo /home/user/darkghost/venv/bin/python3 /home/user/darkghost/main.py
+
+# Start SQL Detector (two terminals)
+cd ~/sql-injection-detector && source venv/bin/activate && python3 ml_service.py
+cd ~/sql-injection-detector && source venv/bin/activate && python3 dashboard.py
+
+Useful Aliases (add to ~/.bashrc)
+
+alias darkghost-dash='cd ~/darkghost && source venv/bin/activate && python3 dashboard.py'
+alias darkghost-main='sudo /home/user/darkghost/venv/bin/python3 /home/user/darkghost/main.py'
+alias sql-ml='cd ~/sql-injection-detector && source venv/bin/activate && python3 ml_service.py'
+alias sql-dash='cd ~/sql-injection-detector && source venv/bin/activate && python3 dashboard.py'
+alias wazuh-logs='tail -f /var/ossec/logs/alerts/alerts.json'
+alias darkghost-logs='tail -f /var/log/darkghost/alerts.log'
+alias snort-logs='tail -f /var/log/snort/alert.txt'
+alias wazuh-restart='sudo systemctl restart wazuh-manager'
+alias snort-restart='sudo systemctl restart snort'
+
+NDR Coverage Map
+
+Traffic Flow	DarkGhost Visibility	Without Port Mirroring
+HR → Server	✅ Yes (server sees it)	✅ Yes
+Support → Internet	❌ No (doesn't reach server)	❌ No
+HR ↔ Support	✅ Yes (mirrored)	❌ No
+Support → HR	✅ Yes (mirrored)	❌ No
+Server → Internet	✅ Yes	✅ Yes
+Key insight: Port mirroring on the switch is essential for detecting lateral movement between HR and Support VLANs.
