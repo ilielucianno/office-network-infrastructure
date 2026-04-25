@@ -81,10 +81,10 @@ OPNsense runs as a virtual machine on the same Ubuntu server. This allows the NG
 **All components purchased with official invoices from EU suppliers (Amazon ES, Senetic, Bionic, Skroutz).**
 
 **Timeline:**
-- April 2026: Backbone switch architecture implemented.
-- April 2026: OPNsense deployed as VM on the server.
-- May 2026: DarkGhost integrated with port mirroring.
-- May 2026: Server upgraded from Intel N100 to Geekom A9 Max.
+- March 2026: Backbone switch architecture implemented.
+- March 2026: OPNsense deployed as VM on the server.
+- April 2026: DarkGhost integrated with port mirroring.
+- April 2026: Server upgraded from Intel N100 to Geekom A9 Max.
 
 ---
 
