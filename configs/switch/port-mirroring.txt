@@ -1,1 +1,71 @@
+TP-Link TL-SG108E Port Mirroring Configuration for DarkGhost NDR
 
+Purpose:
+--------
+Port mirroring (SPAN) copies all traffic passing through the switch and sends it to the server port where DarkGhost NDR listens. This allows DarkGhost to detect anomalies and lateral movement between VLANs (HR <-> Support) that would otherwise be invisible.
+
+Hardware:
+---------
+Switch: TP-Link TL-SG108E (8-port managed switch)
+Firmware: latest
+
+Network Topology:
+----------------
+Port 1: Trunk port carrying all VLAN traffic (connected to MikroTik router)
+Port 8: Server running DarkGhost NDR (Ubuntu, IP 192.168.30.10)
+
+Port Mirroring Configuration (via Web UI):
+------------------------------------------
+
+1. Access switch web interface:
+   - Default IP: 192.168.0.1
+   - Username: admin
+   - Password: (blank by default)
+
+2. Navigate to: Monitoring -> Port Mirror
+
+3. Settings:
+   - Enable Port Mirror: ON
+   - Mirroring Port (Destination): Port 8
+   - Mirrored Ports (Source): Port 1
+   - Mirror Mode: Both (TX and RX)
+
+4. Click Apply
+
+Verification:
+-------------
+On the server (192.168.30.10), run:
+
+sudo tcpdump -i eth0 -c 10
+
+Expected output: you should see traffic from multiple IPs (HR VLAN: 192.168.10.x, Support VLAN: 192.168.20.x, etc.)
+
+If you only see traffic from the server itself, port mirroring is not working.
+
+Troubleshooting:
+----------------
+- Ensure the server is connected to the correct port (Port 8)
+- Ensure the trunk port is correct (Port 1)
+- Try rebooting the switch after applying settings
+- Check that the switch firmware is up to date
+
+Why This Matters for DarkGhost:
+-------------------------------
+Without port mirroring, DarkGhost only sees:
+- Traffic to/from the server (HR -> Server, VPN -> Server)
+- Traffic initiated from the server
+
+With port mirroring, DarkGhost sees:
+- HR <-> Support traffic (lateral movement detection)
+- Support -> HR traffic (unauthorized access attempts)
+- All inter-VLAN communication
+
+This enables DarkGhost to detect:
+- Port scans from Support VLAN to HR VLAN
+- Unusual traffic patterns between isolated VLANs
+- Potential breach attempts moving laterally
+
+Related Documentation:
+----------------------
+- DarkGhost NDR Setup Guide: ../setup-guides/13-darkghost-ndr-setup.md
+- Network Architecture: ../README.md
