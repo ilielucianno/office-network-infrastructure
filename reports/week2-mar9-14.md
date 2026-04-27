@@ -25,7 +25,4 @@
 ping 192.168.10.1   # from Support VLAN - should fail
 ping 192.168.30.10  # from HR VLAN - should succeed
 
-Next Steps
-Implement WireGuard VPN for remote access
 
-Document key management
