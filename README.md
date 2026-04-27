@@ -13,19 +13,19 @@ The business operates online casinos (branded separately, no connection to this 
 This infrastructure started on a budget Mini PC (Intel N100, 16GB RAM) and was later upgraded to a more powerful server to handle multiple VMs and security services.
 
 ### Original Server (2023 - 2026)
-- **Model:** Mini PC Intel N100
-- **RAM:** 16GB (soldered, not upgradeable)
-- **Storage:** 512GB SSD
-- **Cost:** ~€300
-- **Limitation:** Could not run all services (Wazuh + OPNsense VM + DarkGhost + SQL Detector) simultaneously due to RAM constraints.
+- Model: Mini PC Intel N100
+- RAM: 16GB (soldered, not upgradeable)
+- Storage: 512GB SSD
+- Cost: ~€300
+- Limitation: Could not run all services (Wazuh + OPNsense VM + DarkGhost + SQL Detector) simultaneously due to RAM constraints.
 
 ### Current Server (2026 - present)
-- **Model:** Geekom A9 Max
-- **CPU:** AMD Ryzen AI 9 HX 370 (12 cores, much more powerful than N100)
-- **RAM:** 32GB DDR5
-- **Storage:** 1TB NVMe SSD (upgradeable to 2TB)
-- **Cost:** €1,140
-- **Why upgraded:** Needed more RAM and CPU power to run OPNsense as VM alongside Wazuh, DarkGhost, and SQL Detector without performance issues.
+- Model: Geekom A9 Max
+- CPU: AMD Ryzen AI 9 HX 370 (12 cores, much more powerful than N100)
+- RAM: 32GB DDR5
+- Storage: 1TB NVMe SSD (upgradeable to 2TB)
+- Cost: €1,140
+- Why upgraded: Needed more RAM and CPU power to run OPNsense as VM alongside Wazuh, DarkGhost, and SQL Detector without performance issues.
 
 All services were migrated using VirtualBox OVA export/import. The new server runs Ubuntu 22.04 LTS with SVM Mode enabled in BIOS for hardware virtualization.
 
@@ -40,6 +40,7 @@ All security services run on the same physical server (Geekom A9 Max):
 - DarkGhost NDR (Python script, port 8081)
 - SQL Injection Detector (Python script, port 8082)
 - OPNsense NGFW (runs as VirtualBox VM on the same server)
+- Shuffle SOAR (Docker containers, port 3443)
 
 OPNsense runs as a virtual machine on the same Ubuntu server. This allows the NGFW to run without additional hardware.
 
@@ -59,7 +60,9 @@ OPNsense runs as a virtual machine on the same Ubuntu server. This allows the NG
 - SIEM monitoring — Wazuh centralizes logs from server, router, and Snort with email alerts
 - NGFW — OPNsense (as VM) + Zenarmor for Layer 7 filtering and application control (added April 2026)
 - NDR (Network Detection & Response) — DarkGhost NDR monitors mirrored traffic for anomalies, port scans, TTL spoofing, and lateral movement between VLANs (added May 2026)
-- SQL Injection Detection — Real-time SQL injection detection using TensorFlow + Scapy + Flask (open-source Zenarmor alternative)
+- SQL Injection Detection — Real-time SQL injection detection using TensorFlow + Scapy + Flask
+- Active Response — Automatic IP blocking for SSH brute-force attacks via Wazuh (added May 2026)
+- SOAR — Shuffle integration for alert automation and webhook forwarding (added May 2026)
 
 ---
 
@@ -72,19 +75,20 @@ OPNsense runs as a virtual machine on the same Ubuntu server. This allows the NG
 | HR Room Switch | TP-Link TL-SG105 | ~18 | 5-port unmanaged |
 | Consultancy Switch | TP-Link TL-SG105 | ~18 | 5-port unmanaged |
 | WiFi AP | Ubiquiti UniFi 6 Plus | ~110 | Wireless access |
-| **Main Server (current)** | **Geekom A9 Max (AMD Ryzen AI 9, 32GB RAM, 1TB SSD)** | **~1,140** | **Runs Ubuntu + Wazuh + DarkGhost + SQL Detector + OPNsense VM** |
+| Main Server (current) | Geekom A9 Max (AMD Ryzen AI 9, 32GB RAM, 1TB SSD) | ~1,140 | Runs Ubuntu + Wazuh + DarkGhost + SQL Detector + OPNsense VM |
 | Backup Server (retired) | Mini PC Intel N100 (16GB RAM, 512GB SSD) | ~300 | Original server (2023-2026), kept for backup |
 | Printer | HP LaserJet MFP 135a | ~130 | HR printing |
 | Cables | Cat6 + accessories | ~80 | Cabling |
-| **Total (current hardware)** | | **~1,600** | |
+| Total (current hardware) | | ~1,600 | |
 
-**All components purchased with official invoices from EU suppliers (Amazon ES, Senetic, Bionic, Skroutz).**
+All components purchased with official invoices from EU suppliers (Amazon ES, Senetic, Bionic, Skroutz).
 
-**Timeline:**
+Timeline:
 - Dec 2025: Backbone switch architecture implemented.
 - Jan 2026: OPNsense deployed as VM on the server.
 - April 2026: DarkGhost integrated with port mirroring.
 - April 2026: Server upgraded from Intel N100 to Geekom A9 Max.
+- May 2026: Active Response and Shuffle SOAR integration.
 
 ---
 
@@ -132,6 +136,7 @@ OPNsense has two virtual network interfaces:
 - NDR: DarkGhost NDR – anomaly detection, port scan, TTL spoofing, lateral movement
 - SQL Injection Detection: SnortML (TensorFlow + Scapy + Flask)
 - SIEM: Wazuh
+- SOAR: Shuffle (Docker, webhook integration)
 
 ---
 
@@ -144,6 +149,8 @@ OPNsense has two virtual network interfaces:
 | NDR | DarkGhost | Behavioral anomalies, zero-day, port scan, spoofing | Ubuntu (native) |
 | Web App | SQL Injection Detector | SQL injection in HTTP traffic | Ubuntu (native) |
 | SIEM | Wazuh | Centralized logs, correlation, alerts | Ubuntu (native) |
+| Active Response | Wazuh + iptables | Automatic IP blocking for SSH brute-force | Ubuntu (native) |
+| SOAR | Shuffle | Alert automation, webhook forwarding | Docker containers |
 
 ---
 
@@ -156,6 +163,7 @@ OPNsense has two virtual network interfaces:
 | SQL Detector | http://192.168.30.10:8082 | 8082 | Ubuntu (native) |
 | OPNsense WebGUI | https://192.168.100.1 | 443 | VirtualBox VM |
 | Odoo HR | https://odoo.office.local | 8069 | Ubuntu (native) |
+| Shuffle SOAR | https://192.168.30.10:3443 | 3443 | Docker containers |
 
 ---
 
@@ -177,6 +185,8 @@ The complete step-by-step documentation is available in the setup-guides/ folder
 12. OPNsense + Zenarmor NGFW Setup (as VM)
 13. DarkGhost NDR Setup
 14. SQL Injection Detector Setup (SnortML)
+15. Active Response Setup (SSH brute-force blocking)
+16. Shuffle SOAR Integration
 
 ---
 
@@ -184,12 +194,12 @@ The complete step-by-step documentation is available in the setup-guides/ folder
 
 When upgrading from the old Intel N100 server (2023-2026) to the new Geekom A9 Max:
 
-1. **Exported all VirtualBox VMs** as .ova files from the old server
-2. **Installed Ubuntu 22.04 LTS** on the new Geekom
-3. **Enabled SVM Mode** in BIOS (AMD virtualization, equivalent to Intel VT-x)
-4. **Imported all .ova files** into VirtualBox on the new server
-5. **Reconfigured static IPs** for the Ubuntu host and all VMs (took extra time due to driver differences)
-6. **Reinstalled necessary packages** (scapy, flask, tensorflow, etc.) in the Python virtual environments
+1. Exported all VirtualBox VMs as .ova files from the old server
+2. Installed Ubuntu 22.04 LTS on the new Geekom
+3. Enabled SVM Mode in BIOS (AMD virtualization, equivalent to Intel VT-x)
+4. Imported all .ova files into VirtualBox on the new server
+5. Reconfigured static IPs for the Ubuntu host and all VMs (took extra time due to driver differences)
+6. Reinstalled necessary packages (scapy, flask, tensorflow, etc.) in the Python virtual environments
 
 Total migration time was approximately 2-3 days due to driver configuration and IP reassignment.
 
@@ -233,6 +243,8 @@ For daily operations and troubleshooting, see the CHEATSHEET.md.
 | NDR | DarkGhost analyzes mirrored traffic for behavioral anomalies, port scans, and spoofing |
 | SQL Injection Detection | SnortML detects SQL injection in real-time using TensorFlow |
 | SIEM | Wazuh centralizes logs from server, OPNsense, Snort, and DarkGhost |
+| Active Response | Automatic IP blocking for SSH brute-force attacks (iptables) |
+| SOAR | Shuffle receives alerts via webhook for automation |
 | Traffic Visibility | SPAN (port mirroring) on TP-Link switch sends all inter-VLAN traffic to DarkGhost |
 | Backup | Daily automated database backups, 30-day retention |
 
@@ -276,7 +288,8 @@ The server has enough resources to run all services simultaneously:
 - Running OPNsense as a VM on the existing server is possible but requires careful resource allocation. On the Geekom, I allocated 8GB RAM to OPNsense and left 24GB for Ubuntu.
 - Snort can be set to low-memory mode to coexist with other services – I used detect engine profile to reduce RAM usage.
 - Port mirroring (SPAN) is essential for NDR – Without it, DarkGhost only sees traffic to/from the server, not inter-VLAN traffic.
-- **Server migration takes time** – Exporting VMs as .ova is fast, but reconfiguring IPs and drivers on the new hardware can take 2-3 days.
+- Server migration takes time – Exporting VMs as .ova is fast, but reconfiguring IPs and drivers on the new hardware can take 2-3 days.
+- Wazuh 4.x active response scripts require JSON parsing – Positional arguments no longer work; the script must read from stdin.
 
 ---
 
@@ -288,6 +301,8 @@ What I Know I Want to Learn:
 - Complete my certifications – Security+ and Network+ are my priority right now
 - Understand monitoring tools – I've heard about tools that show network activity, but I need to learn them first
 - Add offsite backup – Right now backups are local. I want to add cloud backup (Google Drive) for extra safety
+- Complete Shuffle workflow for automated ticket creation (SOAR)
+- Integrate TheHive for incident management
 
 How This Will Grow:
 As I learn more, I will add new features to this network and document them here. This repository will evolve with my knowledge.
@@ -312,18 +327,19 @@ Completed:
 - TryHackMe Pre Security
 - TryHackMe SEC0
 - TryHackMe SEC1
-- This project – full network infrastructure with VLANs, VPN, IDS, SIEM, NGFW, NDR, and SQL injection detection
+- This project – full network infrastructure with VLANs, VPN, IDS, SIEM, NGFW, NDR, SQL injection detection, Active Response, and SOAR integration
 - Server migration from Intel N100 to Geekom A9 Max (2023-2026)
 
 In Progress:
 - Network+ (CompTIA) – 50% completed
-- Security+ (CompTIA) – started
+- Security+ (CompTIA) – 40% completed
 
 Next Steps (Next 6 Months):
 - Complete Security+ and Network+ certifications
 - Start Cloud Security (AWS / Azure fundamentals)
 - Document more operational procedures
 - Upgrade server storage to 2TB if needed
+- Build complete Shuffle workflow for automated incident response
 
 Why I Built This:
 I've been working in IT infrastructure for 10+ years, managing networks, hardware, and teams. Recently, I realized that what I was already doing (firewalls, VLANs, VPNs, incident response) has a name: cybersecurity. Now I'm formalizing my knowledge through certifications and documenting real projects to demonstrate my skills.
