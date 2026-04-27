@@ -23,7 +23,3 @@
 nmap -sS -p 1-1000 192.168.30.10
 snort -c /etc/snort/snort.lua -T
 
-Next Steps
-Extend Snort rules for application layer detection
-
-Begin Wazuh SIEM configuration
