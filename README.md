@@ -301,12 +301,12 @@ The server has enough resources to run all services simultaneously:
 
 ## Operations & Security Policies
 
-Operational procedures and security policies:
+Operational procedures and security policies are documented internally and not shared in this public repository. The following documents exist in the company's internal documentation system:
 
-  1. [Zoho Security](docs/Zoho%20Security.md)
-  2. [Incident Response Runbook](docs/Incident%20Response%20Runbook.md)
-  3. [Backup Procedures](docs/Backup%20Procedures.md)
-  4. [Accounts & Access Policy](docs/Accounts%20%26%20Access%20Policy.md)
+- Zoho Security (2FA, IP verification, role management)
+- Incident Response Runbook (crypto phishing, recovery procedures)
+- Backup Procedures (daily automated backups, 30-day retention)
+- Accounts & Access Policy (onboarding, offboarding, password policy)
 
 ---
 
