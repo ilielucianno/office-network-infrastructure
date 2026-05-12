@@ -1,210 +1,154 @@
-# Week 10 Report: May 12 - May 18, 2026
+# Week 9 Report: April 27 - May 2, 2026
 
-## Focus: Linux Kernel Vulnerability (Dirty Frag - CVE-2026-43284) – Response & Patching
+## Focus: Wazuh Active Response & Shuffle SOAR Integration
 
-### Why This Was Critical
+### Day 1 - April 27, 2026: Active Response Implementation
 
-On May 12, 2026, a critical Linux kernel vulnerability called **"Dirty Frag" (CVE-2026-43284)** was publicly disclosed. It allows an unprivileged local user to escalate to full root access. A fully functional exploit is publicly available.
+**Objective:** Implement automatic IP blocking for SSH brute-force attacks.
 
-The vulnerability affects two kernel subsystems:
-- **CVE-2026-43284**: xfrm-ESP subsystem (primary attack path)
-- **CVE-2026-43500** (reserved): AF_RXRPC subsystem (fallback path)
+**Tests Performed:**
+- SSH brute-force simulation (6 failed password attempts from 127.0.0.1)
+- Active response script execution testing
+- iptables verification
 
-No alerts were triggered in Wazuh, DarkGhost, or SnortML because the flaw is local, not network-based.
+**Issues Encountered & Resolved:**
 
----
+1. **Wazuh version mismatch** - Manager 4.14.4 vs Indexer/Dashboard 4.8.2
+   - Solution: Updated all components to 4.14.4
 
-### Detection & Initial Assessment
+2. **Missing API user `wazuh-wui`** - User not found in internal database
+   - Solution: Regenerated API users with `wazuh-passwords-tool.sh`
 
-| Item | Details |
-|------|---------|
-| How detected | System update notification + manual security research |
-| Kernel before update | `6.17.0-22-generic` (vulnerable) |
-| Wazuh alerts | None (expected) |
-| DarkGhost alerts | None |
-| SQL Detector alerts | None |
-| Unusual connections/processes | None |
+3. **Invalid command `firewall-drop` in active response** - Command definition missing in `ossec.conf`
+   - Solution: Added `<command>` section with executable path
 
----
+4. **Active response script not receiving data** - Old script format (positional arguments) vs Wazuh 4.x JSON format
+   - Solution: Rewrote `firewall-drop.sh` to parse JSON from stdin
 
-### Actions Taken (May 12, 2026)
+5. **Wazuh manager timeout on restart** - Default timeout (60s) too short for VM
+   - Solution: Created systemd override with `TimeoutStartSec=300`
 
-**1. Pre-update verification**
-- Confirmed running kernel is vulnerable to Dirty Frag
-- Verified all critical services were running
-- Announced planned reboot to the team via Signal
+**Active Response Configuration in `ossec.conf`:**
 
-**2. Kernel upgrade**
+<active-response>
+  <disabled>no</disabled>
+  <command>firewall-drop</command>
+  <location>local</location>
+  <rules_id>5712</rules_id>
+  <timeout>1800</timeout>
+</active-response>
+Test Results:
 
-sudo apt update
-sudo apt upgrade -y
-Upgraded kernel from 6.17.0-22 to 6.17.0-23
+Active Response triggers on rule 5712 (SSH brute-force)
 
-During Docker upgrade, selected No to automatic Docker restart (to allow full reboot)
+IP address 127.0.0.1 blocked successfully in iptables
 
-3. Reboot
+Logs confirm IP extraction and blocking
 
-bash
-sudo reboot
-4. Post-update validation
-
-bash
-uname -r
-# Output: 6.17.0-23-generic
-
-dpkg -l | grep linux-image-6.17.0-23-generic
-# Output: ii (installed correctly)
-
-sudo dmesg | grep -i "dirty\|frag"
-# Output: (nothing - good)
-5. Security audit after reboot
-
-Checked Wazuh logs: no suspicious entries
-
-Checked netstat: no unusual listening ports or connections
-
-Process list: only expected services (lucian logged via tty2 – normal)
-
-DarkGhost dashboard: operational, no anomalies
-
-SQL Detector dashboard: operational, passed test payloads
-
-OPNsense + Zenarmor: no unusual blocks
-
-6. Service restoration
-
-Service	Status
-DarkGhost Dashboard	Restarted
-DarkGhost Main Engine	Restarted
-SQL ML Service	Restarted
-SQL Dashboard	Restarted
-Wazuh (manager/indexer/dashboard)	Auto-restarted after reboot
-Backup Performed This Week
-Date	Type	Location	Status
-May 13, 2026	Full system backup (/etc, /home, /var/lib/docker, /opt)	External SSD	Completed
-May 15, 2026	Incremental backup (critical configs + Odoo DB)	External SSD + Cloud (Google Drive)	Completed
-Backup commands used:
+Commands to verify:
 
 
-# Full backup
-sudo tar -czf /backup/system-backup-$(date +%Y%m%d).tar.gz /etc /home /var/lib/docker /opt
+sudo iptables -L INPUT -n | grep "127.0.0.1"
+sudo cat /var/ossec/logs/active-responses.log
+Day 2 - April 27, 2026: Shuffle SOAR Integration
+Objective: Send Wazuh alerts to Shuffle for automation.
 
-# Odoo database backup (daily)
-sudo -u postgres pg_dump odoo_db > /backup/odoo-$(date +%Y%m%d).sql
-Issues Encountered & Resolved
-Issue	Solution
-Docker upgrade prompted for auto-restart	Selected No – full reboot handled separately
-None else	Update went smoothly
-Current System Status
-Component	Status	Notes
-Kernel version	6.17.0-23-generic	Patched against CVE-2026-43284
-Wazuh	Active	No Dirty Frag alerts
-DarkGhost NDR	Active	No anomalies
-SQL Detector	Active	Passed manual tests
-OPNsense VM	Active	No suspicious logs
-Docker	Upgraded	Restarted during full reboot
-Server connectivity	Normal	SSH, dashboards reachable
-Backups	Completed	May 13 and May 15
-Verification Checklist
-Kernel updated to 6.17.0-23-generic
+Installation Steps:
 
-No dirty or frag messages in dmesg
+Installed Docker and Docker Compose
 
-No suspicious users or processes (who, w, ps aux)
+Cloned Shuffle repository
 
-No unusual network connections (netstat -tulpn)
+Resolved port conflict: Modified docker-compose.yml (9200 → 9201)
 
-Wazuh dashboard accessible and clean
+Deployed Shuffle containers
 
-DarkGhost dashboard accessible and clean
+Created workflow and webhook
 
-SQL Detector dashboard accessible and responds to test payloads
+Issues Encountered & Resolved:
 
-OPNsense + Zenarmor operational
+Port 9200 conflict - Shuffle OpenSearch vs Wazuh Indexer (both need 9200)
 
-All services restarted successfully
+Solution: Changed Shuffle OpenSearch port to 9201
 
-Backups completed (May 13 and May 15)
+Webhook configuration - Added integration section in ossec.conf
 
-Preventive Actions (Recommended)
-Enable unattended security updates for automatic kernel patching:
+Wazuh Integration in ossec.conf:
 
-sudo apt install unattended-upgrades
-sudo dpkg-reconfigure --priority=low unattended-upgrades
-Keep Wazuh alerting for privilege escalation attempts (already active)
 
-No evidence of exploitation – all logs and indicators are clean
+<integration>
+  <name>shuffle</name>
+  <hook_url>https://192.168.2.21:3443/api/v1/hooks/webhook_a465dd55-8a02-4e9a-9b35-8ee3d91e05bc</hook_url>
+  <level>10</level>
+  <alert_format>json</alert_format>
+</integration>
+Test Results:
 
-Timeline (May 12-15, 2026)
-Date	Time	Action
-May 12	~09:00	Server started, update notification received
-May 12	19:00	Vulnerability confirmed, update planned
-May 12	19:30	Kernel upgrade performed
-May 12	19:45	Reboot completed
-May 12	20:00	Post-update audit finished
-May 13	-	Full backup completed
-May 15	-	Incremental backup completed
-Update & Backup Time
-Item	Time
-Update & upgrade	~5 minutes
-Reboot	~2 minutes
-Post-update audit	~10 minutes
-Full backup (May 13)	~15 minutes
-Incremental backup (May 15)	~5 minutes
-Total downtime	~2 minutes (reboot only)
-Lessons Learned
-Kernel security updates cannot be delayed when a public exploit is available
+Shuffle webhook receives alerts (confirmed with curl test)
 
-Wazuh does not alert on local kernel exploits – need to monitor CVE announcements separately
+Execution IDs generated for each webhook call
 
-dmesg and dpkg are essential for post-update verification
+Test command:
 
-Always announce reboots – even short ones affect remote agents
 
-Regular backups (every 2-3 days) are essential for disaster recovery
+curl -k -X POST https://192.168.2.21:3443/api/v1/hooks/webhook_a465dd55-8a02-4e9a-9b35-8ee3d91e05bc -H "Content-Type: application/json" -d '{"test": "Hello from Wazuh", "rule": "5712"}'
+This Week Summary - What Works Now
+Capability	Status
+Active Response (SSH brute-force)	Complete
+Shuffle SOAR Integration	Complete
+Wazuh 4.14.4	Stable
+DarkGhost NDR (port 8081)	Running
+SQL Injection Detector (port 8082)	Running
+OPNsense + Zenarmor	Running
+Current Lab Access
+Service	URL
+Wazuh Dashboard	https://192.168.2.21
+DarkGhost NDR	http://192.168.2.21:8081
+SQL Detector	http://192.168.2.21:8082
+OPNsense WebGUI	https://192.168.100.1
+Shuffle SOAR	https://192.168.2.21:3443
+Incident Response Update
+When SSH brute-force detected:
 
-Next Steps
-Enable unattended-upgrades for kernel security updates
+Wazuh triggers rule 5712 (level 10)
 
-Add CVE monitoring to weekly security checklist
+Active response automatically adds attacker IP to iptables blocklist
 
-Test Docker containers after full reboot (already passed)
+Shuffle webhook receives alert
 
-Document kernel update procedure in runbook
+Alert appears in Wazuh dashboard
 
-Continue regular backup schedule (every 2 days)
+Response times measured in lab:
+
+Detection: less than 5 seconds
+
+IP blocking: less than 10 seconds (after 6 failed attempts)
+
+Total time from first detection to block: approximately 30 seconds
+
+Lessons Learned This Week
+Wazuh 4.x active response scripts require JSON parsing - Positional arguments no longer work
+
+Systemd timeouts need adjustment - Wazuh manager needs more than 60 seconds on resource-constrained VMs
+
+Port conflicts are common - Always check for existing services before deploying new containers
+
+Version consistency matters - All Wazuh components must be on same major version
 
 Commands Used This Week
-bash
-# Check kernel version
-uname -r
 
-# Update system
-sudo apt update && sudo apt upgrade -y
+# Check active response log
+sudo cat /var/ossec/logs/active-responses.log
 
-# Reboot
-sudo reboot
+# Check iptables blocked IPs
+sudo iptables -L INPUT -n
 
-# Verify kernel package
-dpkg -l | grep linux-image-6.17.0-23-generic
+# Remove blocked IP (manual cleanup)
+sudo iptables -D INPUT -s <IP> -j DROP
 
-# Check for exploit messages
-sudo dmesg | grep -i "dirty\|frag"
+# Test Shuffle webhook
+curl -k -X POST https://192.168.2.21:3443/api/v1/hooks/webhook_a465dd55-8a02-4e9a-9b35-8ee3d91e05bc -H "Content-Type: application/json" -d '{"test": "alert", "rule": "5712"}'
 
-# Check active services after reboot
-sudo systemctl status wazuh-manager wazuh-indexer wazuh-dashboard --no-pager | grep "Active"
-
-# Check for suspicious users
-who
-w
-ps aux | grep -E "root:|user" | grep -v grep
-
-# Check network connections
-sudo netstat -tulpn | grep -E "LISTEN|ESTABLISHED"
-
-# Full system backup
-sudo tar -czf /backup/system-backup-$(date +%Y%m%d).tar.gz /etc /home /var/lib/docker /opt
-
-# Odoo database backup
-sudo -u postgres pg_dump odoo_db > /backup/odoo-$(date +%Y%m%d).sql
-Status: Server patched, all services operational, no signs of compromise, backups completed.
+# Wazuh manager restart (with increased timeout)
+sudo systemctl restart wazuh-manager
+Status: Active Response and Shuffle SOAR successfully implemented and tested.
