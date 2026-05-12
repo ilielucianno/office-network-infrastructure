@@ -54,14 +54,23 @@ DarkGhost source	GitHub	Manual	May 10, 2026	✅
 SQL Detector source	GitHub	Manual	May 10, 2026	✅
 Issues Encountered & Resolved
 Issue	Solution
-Backup server had old kernel (6.17.0-22)	Ran sudo apt update && sudo apt upgrade -y
+Backup server had old kernel (6.17.0-22)	sudo apt update && sudo apt upgrade -y
 Docker on backup server outdated	sudo apt upgrade docker.io
+SQL Injection Detector - Verification
+Component	Version	Status
+TensorFlow	2.21.0	Up to date ✅
+Flask	latest	OK
+Model accuracy	100%	Verified
+No vulnerabilities found. System is secure.
+
 Lessons Learned
 Backup server had not been updated in 3 weeks – schedule regular updates
 
 Dirty Frag patch applied successfully on both servers
 
 Wazuh Active Response continues to work after kernel update
+
+TensorFlow is up to date (2.21.0)
 
 Next week: Full restore test on backup server
 
@@ -75,7 +84,7 @@ Measure actual recovery time
 Document recovery procedure
 
 Commands Used
-bash
+
 # Update backup server
 sudo apt update && sudo apt upgrade -y
 
@@ -95,14 +104,3 @@ sudo cat /var/ossec/logs/active-responses.log
 df -h
 ls -la /backup/
 Status: ✅ Both servers patched and verified. Backup server ready for disaster recovery test next week.
-
-### SQL Injection Detector - Verification
-
-| Component | Version | Status |
-|-----------|---------|--------|
-| TensorFlow | 2.21.0 | Up to date |
-| Flask | (latest) | OK |
-| Model accuracy | 100% | Verified |
-
-No vulnerabilities found. System is secure.
-
