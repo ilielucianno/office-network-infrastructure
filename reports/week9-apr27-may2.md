@@ -1,4 +1,3 @@
-
 # Week 10 Report: May 12 - May 18, 2026
 
 ## Focus: Linux Kernel Vulnerability (Dirty Frag - CVE-2026-43284) – Response & Patching
@@ -19,7 +18,7 @@ No alerts were triggered in Wazuh, DarkGhost, or SnortML because the flaw is loc
 
 | Item | Details |
 |------|---------|
-| How detected | Tech alert + server update prompt at boot |
+| How detected | System update notification + manual security research |
 | Kernel before update | `6.17.0-22-generic` (vulnerable) |
 | Wazuh alerts | None (expected) |
 | DarkGhost alerts | None |
@@ -86,6 +85,7 @@ May 13, 2026	Full system backup (/etc, /home, /var/lib/docker, /opt)	External SS
 May 15, 2026	Incremental backup (critical configs + Odoo DB)	External SSD + Cloud (Google Drive)	Completed
 Backup commands used:
 
+
 # Full backup
 sudo tar -czf /backup/system-backup-$(date +%Y%m%d).tar.gz /etc /home /var/lib/docker /opt
 
@@ -129,24 +129,22 @@ Backups completed (May 13 and May 15)
 Preventive Actions (Recommended)
 Enable unattended security updates for automatic kernel patching:
 
-bash
 sudo apt install unattended-upgrades
 sudo dpkg-reconfigure --priority=low unattended-upgrades
 Keep Wazuh alerting for privilege escalation attempts (already active)
 
 No evidence of exploitation – all logs and indicators are clean
 
-
-Timeline (May 12, 2026)
-Time	Action
-~09:00	Server started, update prompt received (postponed)
-19:00	Vulnerability alert reviewed, update planned
-19:30	Kernel upgrade performed
-19:45	Reboot completed
-20:00	Post-update audit finished, all services restored
-May 13	Full backup completed
-May 15	Incremental backup completed
-Migration/Update Time
+Timeline (May 12-15, 2026)
+Date	Time	Action
+May 12	~09:00	Server started, update notification received
+May 12	19:00	Vulnerability confirmed, update planned
+May 12	19:30	Kernel upgrade performed
+May 12	19:45	Reboot completed
+May 12	20:00	Post-update audit finished
+May 13	-	Full backup completed
+May 15	-	Incremental backup completed
+Update & Backup Time
 Item	Time
 Update & upgrade	~5 minutes
 Reboot	~2 minutes
@@ -154,9 +152,7 @@ Post-update audit	~10 minutes
 Full backup (May 13)	~15 minutes
 Incremental backup (May 15)	~5 minutes
 Total downtime	~2 minutes (reboot only)
-
 Lessons Learned
-
 Kernel security updates cannot be delayed when a public exploit is available
 
 Wazuh does not alert on local kernel exploits – need to monitor CVE announcements separately
@@ -179,8 +175,7 @@ Document kernel update procedure in runbook
 Continue regular backup schedule (every 2 days)
 
 Commands Used This Week
-
-
+bash
 # Check kernel version
 uname -r
 
