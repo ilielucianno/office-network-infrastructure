@@ -134,9 +134,8 @@ sudo apt install unattended-upgrades
 sudo dpkg-reconfigure --priority=low unattended-upgrades
 Keep Wazuh alerting for privilege escalation attempts (already active)
 
-===============================================================
 No evidence of exploitation – all logs and indicators are clean
-===============================================================
+
 
 Timeline (May 12, 2026)
 Time	Action
@@ -157,7 +156,7 @@ Incremental backup (May 15)	~5 minutes
 Total downtime	~2 minutes (reboot only)
 
 Lessons Learned
-===============
+
 Kernel security updates cannot be delayed when a public exploit is available
 
 Wazuh does not alert on local kernel exploits – need to monitor CVE announcements separately
@@ -180,8 +179,8 @@ Document kernel update procedure in runbook
 Continue regular backup schedule (every 2 days)
 
 Commands Used This Week
-=======================
-bash
+
+
 # Check kernel version
 uname -r
 
