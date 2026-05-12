@@ -13,7 +13,6 @@ This document tracks pending security and compliance tasks for the office networ
 
 | Task | Deadline | Priority | Status |
 |------|----------|----------|--------|
-| GDPR Art. 30 – Records of Processing | May 23, 2026 | 🔴 High | Not started |
 | Disk encryption (LUKS) | May 30, 2026 | 🔴 High | Not started |
 | Disaster recovery test (restore from backup) | May 31, 2026 | 🟡 Medium | Not started |
 
@@ -21,29 +20,7 @@ This document tracks pending security and compliance tasks for the office networ
 
 ## Task Details
 
-### 1. GDPR Art. 30 – Records of Processing
-
-**Description:** Complete the official GDPR "Record of Processing Activities" form from the Cyprus Commissioner for Personal Data Protection.
-
-**Why needed:** Legal requirement for any company processing personal data in the EU.
-
-**Steps:**
-1. Download form from www.dataprotection.gov.cy
-2. Fill in company details (Turtle Cove Consultancy Ltd)
-3. List all data processing activities:
-   - Employee data (HR, salaries, contracts)
-   - Accounting data (invoices, payments, VAT)
-   - Zoho CRM data (customer support)
-4. Document data retention periods
-5. Save completed form (PDF) and keep on file
-
-**Deadline:** May 23, 2026
-
-**Responsible:** Ilie Lucian
-
----
-
-### 2. Disk Encryption (LUKS)
+### 1. Disk Encryption (LUKS)
 
 **Description:** Encrypt the Ubuntu host disk on the physical server at the office (Geekom A9 Max). This protects all data (including OPNsense and Windows VMs) in case of physical theft.
 
@@ -70,7 +47,7 @@ This document tracks pending security and compliance tasks for the office networ
 
 ---
 
-### 3. Disaster Recovery Test (Restore from Backup)
+### 2. Disaster Recovery Test (Restore from Backup)
 
 **Description:** Simulate complete server failure and test the ability to restore from backup on the backup server (Intel N100).
 
@@ -103,6 +80,7 @@ This document tracks pending security and compliance tasks for the office networ
 | Risk assessment documented | May 12, 2026 |
 | Security awareness training documented | May 12, 2026 |
 | Change management policy documented | May 12, 2026 |
+| GDPR Art. 30 – Records of Processing | Handled by accounting/HR |
 
 ---
 
@@ -111,6 +89,7 @@ This document tracks pending security and compliance tasks for the office networ
 - All passwords for encryption and critical systems are stored in Standard Notes (master password protected)
 - Backup server (Intel N100) is available for disaster recovery testing
 - Offsite backup (Google Drive) is planned for Q3 2026
+- GDPR Art. 30 (Records of Processing) is the responsibility of the accounting/HR department, not IT
 
 ---
 
