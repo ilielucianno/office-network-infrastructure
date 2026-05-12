@@ -154,3 +154,16 @@ ls -la /backup/
 ---
 
 > ✅ **Status: Both servers patched and verified. Backup server ready for disaster recovery test next week.**
+>
+> ### DarkGhost NDR - Python Package Update
+
+| Package | Old Version | New Version |
+|---------|-------------|-------------|
+| certifi | 2026.2.25 | 2026.4.22 |
+| click | 8.3.2 | 8.3.3 |
+| idna | 3.11 | 3.14 |
+| pip | 24.0 | 26.1.1 |
+| requests | 2.33.1 | 2.34.0 |
+| urllib3 | 2.6.3 | 2.7.0 |
+
+**Status:** ✅ All packages updated. DarkGhost remains stable.
