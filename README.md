@@ -2,8 +2,6 @@
 
 **Secure office network with VLAN segmentation, WireGuard VPN, and self-hosted Odoo HR system.**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
 ---
 
 ## 📌 Overview
