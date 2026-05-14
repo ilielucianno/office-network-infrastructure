@@ -1,29 +1,43 @@
-# MikroTik RouterOS Configuration
+# ============================================
+# MikroTik RouterOS Configuration - COMPLETE
 # Device: hAP ac²
-# Purpose: Office network with VLAN segmentation, firewall rules, and WireGuard VPN
-# Date: March 2026
+# Purpose: VLAN segmentation, DHCP for all VLANs, WireGuard VPN
+# Updated: May 2026
+# 
+# ⚠️ REPLACE placeholders before using:
+#    <WAN_INTERFACE> - your WAN port (usually ether1)
+#    <VPN_PORT> - your WireGuard port
+#    <VPN_SUBNET> - VPN subnet (e.g., 10.10.10.0)
+# ============================================
 
 # ============================================
-# STEP 1: RESET TO FACTORY DEFAULTS (CLEAN START)
-# ============================================
-# Run this first to start fresh:
-# /system reset-configuration no-defaults=yes skip-backup=yes
-
-# ============================================
-# STEP 2: BRIDGE CONFIGURATION (VLAN-AWARE)
+# BRIDGE WITH VLAN FILTERING
 # ============================================
 
 /interface bridge
 add name=bridge1 vlan-filtering=yes
 
 /interface bridge port
-add bridge=bridge1 interface=ether2
-add bridge=bridge1 interface=ether3
-add bridge=bridge1 interface=ether4
-add bridge=bridge1 interface=ether5
+add bridge=bridge1 interface=ether2 pvid=10
+add bridge=bridge1 interface=ether3 pvid=20
+add bridge=bridge1 interface=ether4 pvid=30
+add bridge=bridge1 interface=ether5 pvid=10
+
+# Port trunk to main switch
+/interface bridge port
+set [find interface=ether2] frame-types=admit-only-vlan-tagged
 
 # ============================================
-# STEP 3: VLAN INTERFACES
+# VLAN DEFINITIONS
+# ============================================
+
+/interface bridge vlan
+add bridge=bridge1 vlan-id=10 tagged=bridge1,ether2 untagged=ether3,ether5
+add bridge=bridge1 vlan-id=20 tagged=bridge1,ether2 untagged=ether4
+add bridge=bridge1 vlan-id=30 tagged=bridge1,ether2
+
+# ============================================
+# VLAN INTERFACES
 # ============================================
 
 /interface vlan
@@ -32,7 +46,7 @@ add name=vlan20-support vlan-id=20 interface=bridge1
 add name=vlan30-server vlan-id=30 interface=bridge1
 
 # ============================================
-# STEP 4: IP ADDRESSES (GATEWAYS PER VLAN)
+# IP ADDRESSES (GATEWAYS)
 # ============================================
 
 /ip address
@@ -41,104 +55,79 @@ add address=192.168.20.1/24 interface=vlan20-support
 add address=192.168.30.1/24 interface=vlan30-server
 
 # ============================================
-# STEP 5: DHCP POOLS
+# DHCP POOLS (ALL 3 VLANS)
 # ============================================
 
 /ip pool
 add name=pool-hr ranges=192.168.10.100-192.168.10.200
 add name=pool-support ranges=192.168.20.100-192.168.20.200
+add name=pool-server ranges=192.168.30.100-192.168.30.200
 
 # ============================================
-# STEP 6: DHCP SERVERS
+# DHCP SERVERS (ALL 3 VLANS)
 # ============================================
 
 /ip dhcp-server
-add name=dhcp-hr interface=vlan10-hr address-pool=pool-hr
-add name=dhcp-support interface=vlan20-support address-pool=pool-support
+add name=dhcp-hr interface=vlan10-hr address-pool=pool-hr disabled=no
+add name=dhcp-support interface=vlan20-support address-pool=pool-support disabled=no
+add name=dhcp-server interface=vlan30-server address-pool=pool-server disabled=no
 
 /ip dhcp-server network
 add address=192.168.10.0/24 gateway=192.168.10.1 dns-server=1.1.1.1,8.8.8.8
 add address=192.168.20.0/24 gateway=192.168.20.1 dns-server=1.1.1.1,8.8.8.8
+add address=192.168.30.0/24 gateway=192.168.30.1 dns-server=1.1.1.1,8.8.8.8
 
 # ============================================
-# STEP 7: INTERNET CONFIGURATION (WAN)
+# WAN (DHCP CLIENT)
 # ============================================
 
 /ip dhcp-client
-add interface=ether1 disabled=no
+add interface=<WAN_INTERFACE> disabled=no
 
 # ============================================
-# STEP 8: NAT (MASQUERADE)
+# NAT MASQUERADE
 # ============================================
 
 /ip firewall nat
-add chain=srcnat out-interface=ether1 action=masquerade
+add chain=srcnat out-interface=<WAN_INTERFACE> action=masquerade
 
 # ============================================
-# STEP 9: FIREWALL RULES (INTER-VLAN BLOCKING)
+# FIREWALL FILTER RULES
 # ============================================
 
-# Default forward policy: accept (we'll block specific)
 /ip firewall filter
-add chain=forward action=accept
+set [find default-action=accept] action=drop
 
-# Block Support → HR
-add chain=forward action=drop src-address=192.168.20.0/24 dst-address=192.168.10.0/24
+add chain=forward connection-state=established,related action=accept
 
-# Block Support → Server
-add chain=forward action=drop src-address=192.168.20.0/24 dst-address=192.168.30.0/24
+# Inter-VLAN blocking
+add chain=forward src-address=192.168.20.0/24 dst-address=192.168.10.0/24 action=drop
+add chain=forward src-address=192.168.20.0/24 dst-address=192.168.30.0/24 action=drop
+add chain=forward src-address=192.168.10.0/24 dst-address=192.168.20.0/24 action=drop
 
-# Block HR → Support
-add chain=forward action=drop src-address=192.168.10.0/24 dst-address=192.168.20.0/24
-
-# Allow HR → Server
-add chain=forward action=accept src-address=192.168.10.0/24 dst-address=192.168.30.0/24
-
-# Allow internet access for all
-add chain=forward action=accept out-interface=ether1
+# Allowed rules
+add chain=forward src-address=192.168.10.0/24 dst-address=192.168.30.0/24 action=accept
+add chain=forward out-interface=<WAN_INTERFACE> action=accept
+add chain=forward in-interface=bridge1 out-interface=bridge1 action=accept
 
 # ============================================
-# STEP 10: WIREGUARD VPN CONFIGURATION
+# WIREGUARD VPN (KEYS REMOVED FOR PUBLIC REPO)
 # ============================================
 
-# Create WireGuard interface
 /interface wireguard
-add name=wg0 listen-port=13231
+add name=wg0 listen-port=<VPN_PORT>
 
-# Assign IP for VPN server
 /ip address
-add address=10.10.10.1/24 interface=wg0
+add address=<VPN_SUBNET>.1/24 interface=wg0
 
-# Generate keys (run this command and copy the output)
-# /interface wireguard print
-# Save the public key for clients
-
-# Allow VPN traffic in firewall
 /ip firewall filter
-add chain=input action=accept protocol=udp dst-port=13231
-add chain=forward action=accept src-address=10.10.10.0/24
-
-# Allow VPN → Server
-add chain=forward action=accept src-address=10.10.10.0/24 dst-address=192.168.30.0/24
-
-# Allow VPN → HR (for admin access)
-add chain=forward action=accept src-address=10.10.10.0/24 dst-address=192.168.10.0/24
+add chain=input protocol=udp dst-port=<VPN_PORT> action=accept
+add chain=forward src-address=<VPN_SUBNET>/24 action=accept
+add chain=forward src-address=<VPN_SUBNET>/24 dst-address=192.168.30.0/24 action=accept
+add chain=forward src-address=<VPN_SUBNET>/24 dst-address=192.168.10.0/24 action=accept
 
 # ============================================
-# STEP 11: ADD VPN CLIENT (EXAMPLE)
+# EXAMPLE PEER (CLIENT) - REPLACE WITH ACTUAL KEYS
 # ============================================
-# For each remote user, add a peer with their public key
-# Replace "PUBLIC_KEY_HERE" with the client's public key
-# Replace "10.10.10.X" with a unique IP per client
-
 # /interface wireguard peers
-# add interface=wg0 public-key="PUBLIC_KEY_HERE" allowed-address=10.10.10.2/32
-
-# ============================================
-# STEP 12: VERIFICATION COMMANDS
-# ============================================
-# Check interfaces: /interface print
-# Check IP addresses: /ip address print
-# Check firewall rules: /ip firewall filter print
-# Check WireGuard status: /interface wireguard print
-# Check DHCP leases: /ip dhcp-server lease print
+# add interface=wg0 public-key="<CLIENT_PUBLIC_KEY>" allowed-address=<VPN_SUBNET>.2/32
