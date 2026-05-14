@@ -56,7 +56,7 @@ Quick reference for daily operations and monitoring.
 
 | Action | Location / Command |
 |--------|---------------------|
-| Access switch web UI | `http://192.168.0.1` (or configured IP) |
+| Access switch web UI | `http://192.168.0.1` (your configured IP) |
 | Default credentials | admin / (no password) |
 | Enable port mirroring | Monitoring → Port Mirror → Enable |
 | Mirroring Port (Destination) | Port 8 (server connected here) |
