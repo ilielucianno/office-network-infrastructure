@@ -1,6 +1,8 @@
-# Office Network Infrastructure
+markdown# Office Network Infrastructure
 
 **Secure office network with VLAN segmentation, WireGuard VPN, and self-hosted Odoo HR system.**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
 
@@ -14,14 +16,12 @@ This project documents a complete, production-ready office network for a small c
 - **Self-hosted Odoo** – HR system with 2FA
 - **Automated backups** – daily, 30-day retention
 
-> The business operates online casinos (branded separately). Financial operations are protected by 2FA, IP verification, withdrawal delays, and manual approval.
+> The business operates online casinos (branded separately, no connection to this infrastructure). Financial operations are protected by 2FA, IP verification, withdrawal delays, and manual approval by owners.
 
 ---
 
 ## 🏗️ Network Architecture
-
 Internet → MikroTik Router → TP-Link Switch → HR / Support / Server / WiFi / VPN
-
 
 | VLAN | Name | Subnet | Purpose |
 |------|------|--------|---------|
@@ -42,24 +42,26 @@ Internet → MikroTik Router → TP-Link Switch → HR / Support / Server / WiFi
 
 ### Traffic Visibility (DarkGhost NDR)
 
-A **SPAN session (port mirroring)** on the TP-Link switch copies all inter-VLAN traffic to the server, enabling DarkGhost to detect lateral movement, port scans, and behavioral anomalies.
+A **SPAN session (port mirroring)** on the TP-Link switch copies all inter-VLAN traffic to the server, enabling DarkGhost to detect lateral movement, port scans, and behavioral anomalies — even traffic that never touches the server directly.
 
 ---
 
 ## 🖥️ Hardware (Total ~€1,600)
 
-| Component | Model | Cost |
-|-----------|-------|------|
-| Router | MikroTik hAP ac² | ~€65 |
-| Backbone Switch | TP-Link TL-SG108E (managed) | ~€30 |
-| Access Switches | 2× TP-Link TL-SG105 (unmanaged) | ~€36 |
-| WiFi AP | Ubiquiti UniFi 6 Plus | ~€110 |
-| **Main Server** | **Geekom A9 Max (AMD Ryzen AI 9, 32GB RAM, 1TB SSD)** | **~€1,140** |
-| Backup Server | Mini PC Intel N100 (retired, kept for spare) | ~€300 |
-| Printer | HP LaserJet MFP 135a | ~€130 |
-| Cables | Cat6 + accessories | ~€80 |
+| Component | Model | Cost | Notes |
+|-----------|-------|------|-------|
+| Router | MikroTik hAP ac² | ~€65 | Firewall, VPN, VLAN routing |
+| Backbone Switch | TP-Link TL-SG108E (managed) | ~€30 | 8-port, SPAN/port mirroring |
+| Access Switches | 2× TP-Link TL-SG105 (unmanaged) | ~€36 | HR room + Consultancy |
+| WiFi AP | Ubiquiti UniFi 6 Plus | ~€110 | Wireless access |
+| **Main Server** | **Geekom A9 Max (AMD Ryzen AI 9, 32GB RAM, 1TB SSD)** | **~€1,140** | **All services** |
+| Backup Server | Mini PC Intel N100 (retired, on standby) | ~€300 | Disaster recovery |
+| Printer | HP LaserJet MFP 135a | ~€130 | HR printing |
+| Cables | Cat6 + accessories | ~€80 | Cabling |
 
-> **Server Upgrade History:** Started on Intel N100 (2023–2026), migrated to Geekom A9 Max (April 2026) for more RAM and CPU to run OPNsense VM alongside other services. See [docs/migration-notes.md](docs/migration-notes.md).
+> **Server Upgrade History:** Started on Intel N100 (2023–2026), migrated to Geekom A9 Max (April 2026) for more RAM and CPU to run OPNsense VM alongside all other services. See [docs/migration-notes.md](docs/migration-notes.md).
+
+All components purchased with official invoices from Cyprus suppliers (Senetic, Bionic, Skroutz).
 
 ---
 
@@ -70,12 +72,30 @@ A **SPAN session (port mirroring)** on the TP-Link switch copies all inter-VLAN 
 | **NGFW / IPS** | OPNsense + Zenarmor | Layer 7 filtering, app control | VirtualBox VM |
 | **Network IDS** | Snort 3 | Signature-based (low-memory mode) | Ubuntu native |
 | **NDR** | DarkGhost | Behavioral anomalies, zero-day, port scans | Ubuntu native |
-| **Web App** | SnortML (TensorFlow) | SQL injection (real-time) | Ubuntu native |
+| **Web App** | SnortML (TensorFlow) | SQL injection (real-time, ML-based) | Ubuntu native |
 | **SIEM** | Wazuh | Log centralization, correlation, alerts | Ubuntu native |
 | **Active Response** | Wazuh + iptables | Automatic SSH brute-force blocking | Ubuntu native |
 | **SOAR** | Shuffle | Alert automation, webhooks | Docker |
 
-### Service Access URLs (Geekom A9 Max)
+### 🔬 Custom-Built Security Tools
+
+#### DarkGhost NDR
+Anomaly-based behavioral detection system inspired by Darktrace. Monitors all network traffic via SPAN port mirroring and builds behavioral baselines per IP/device. Detects:
+- Port scans and reconnaissance
+- Lateral movement between VLANs
+- Unusual connection patterns and zero-day behavior
+- Real-time alerts via Flask dashboard
+
+#### SnortML – SQL Injection Detector
+ML-powered intrusion detection built with TensorFlow + Scapy + Flask:
+- TensorFlow model trained on SQL injection patterns
+- Real-time packet inspection via Scapy
+- Flask dashboard with live alerts
+- **Model accuracy: 100%** | TensorFlow 2.21.0
+
+Both tools are publicly available on GitHub: [ilielucianno](https://github.com/ilielucianno)
+
+### Service Access URLs (Geekom A9 Max – 192.168.30.10)
 
 | Service | URL | Port |
 |---------|-----|------|
@@ -85,6 +105,72 @@ A **SPAN session (port mirroring)** on the TP-Link switch copies all inter-VLAN 
 | OPNsense WebGUI | `https://192.168.100.1` | 443 |
 | Odoo HR | `https://odoo.office.local` | 8069 |
 | Shuffle SOAR | `https://192.168.30.10:3443` | 3443 |
+
+---
+
+## 🛡️ Why This Architecture Works
+
+| Threat | Mitigation |
+|--------|------------|
+| Compromised support laptop | VLAN isolation – cannot reach HR or Server |
+| Brute-force SSH attack | Fail2Ban + Wazuh Active Response (auto-block after 5 attempts) |
+| Zero-day or unusual behavior | DarkGhost NDR behavioral baseline detection |
+| SQL injection on web apps | SnortML (TensorFlow) real-time ML detection |
+| Phishing / compromised Zoho | 2FA + IP verification + 7–21 day withdrawal delay |
+| Malware / malicious website | OPNsense + Zenarmor Layer 7 filtering |
+| Attacker gets into Zoho | Support roles cannot withdraw money |
+| Lateral movement between VLANs | SPAN mirroring → DarkGhost detects instantly |
+
+---
+
+## 🔑 Key Security Implementations
+
+### Network & Infrastructure
+
+| Measure | Implementation |
+|---------|----------------|
+| Network Segmentation | VLANs separate HR, Support, Server — no lateral movement |
+| Firewall Rules | MikroTik blocks all inter-VLAN traffic except explicit allow rules |
+| VPN-Only Server Access | Odoo not exposed to internet — WireGuard VPN or HR VLAN only |
+| WireGuard VPN | Key-based authentication, unique keys per user, IP tracking |
+| Server Hardening | UFW firewall, automatic security updates (unattended-upgrades) |
+| Fail2Ban | Blocks brute-force on SSH and Odoo |
+| Intrusion Detection | Snort 3 IDS (signature) + DarkGhost NDR (behavioral) |
+| NGFW | OPNsense + Zenarmor — Layer 7 filtering, application control, IPS |
+| SIEM | Wazuh — log centralization, active response, email alerts |
+| Audit Logging | auditd monitors /etc/passwd, /etc/shadow, /home (GDPR Art. 32) |
+| Backup | Daily automated database backups, 30-day retention |
+
+### Operational & Access Control
+
+| Measure | Implementation |
+|---------|----------------|
+| Zoho 2FA | Two-factor authentication for all accounts |
+| IP-Based Verification | New IP triggers 2FA — trusted devices remembered 30 days |
+| User Roles | Owners (full), Support (limited, no withdrawals), HR (server only) |
+| Withdrawal Protection | 7–21 day delay, daily review, manual approval by owners only |
+| Password Policy | 12+ characters, unique, changed quarterly |
+| WireGuard Key Management | Unique keys per user, spreadsheet tracking, immediate revocation |
+| Incident Response | Documented runbook for crypto breaches, suspicious logins |
+| Offboarding | All accounts disabled immediately on employee departure |
+
+---
+
+## 📂 Repository Structure
+office-network-infrastructure/
+├── configs/                  # All configuration files
+│   ├── mikrotik/             # RouterOS configs (router, firewall, WireGuard)
+│   ├── server/               # UFW, Fail2Ban, backup script
+│   ├── switch/               # Port mirroring config
+│   └── operations/           # Security policies, incident runbook
+├── docs/                     # Documentation (hardware, migration, diagrams)
+├── operations/               # Backup procedures, accounts policy
+├── reports/                  # Weekly progress reports
+├── setup-guides/             # Step-by-step setup guides
+├── CHEATSHEET.md             # Daily operations and troubleshooting
+├── COMPLIANCE.md             # GDPR / SOC 2 / ISO 27001 compliance
+├── PENDING-TASKS.md          # Ongoing improvements
+└── RESPONSIBILITIES.md       # Role definitions
 
 ---
 
@@ -115,45 +201,96 @@ A **SPAN session (port mirroring)** on the TP-Link switch copies all inter-VLAN 
 
 4. **Troubleshooting** – check `PENDING-TASKS.md`
 
----
-
-## 🛡️ Why This Architecture Works
-
-| Threat | Mitigation |
-|--------|------------|
-| Compromised support laptop | VLAN isolation – cannot reach HR or Server |
-| Brute-force SSH attack | Fail2Ban + Wazuh Active Response (auto-block) |
-| Zero-day or unusual behavior | DarkGhost NDR behavioral baseline |
-| SQL injection on web apps | SnortML (TensorFlow) real-time detection |
-| Phishing / compromised Zoho | 2FA + IP verification + 7–21 day withdrawal delay |
-| Malware / malicious website | OPNsense + Zenarmor Layer 7 filtering |
+5. **Compliance status** – see `COMPLIANCE.md`
 
 ---
 
-## 📚 Lessons Learned
+## 📚 Setup Guides
 
-- VLAN filtering on MikroTik requires **bridge VLAN filtering** enabled
-- Port mirroring (SPAN) is essential for NDR – otherwise DarkGhost only sees server traffic
-- Snort 3 can run in **low-memory mode** to coexist with other services
-- Server migration (N100 → Geekom) took 2–3 days due to IP and driver reconfiguration
-- Wazuh 4.x active response scripts require **JSON parsing** (no positional arguments)
+| # | Guide |
+|---|-------|
+| 01 | [Hardware Setup](setup-guides/01-hardware-setup.md) |
+| 02 | [Router Configuration](setup-guides/02-router-config.md) |
+| 03 | [Switch & VLAN Configuration](setup-guides/03-switch-vlan.md) |
+| 04 | [WiFi Setup (Ubiquiti)](setup-guides/04-wifi-setup.md) |
+| 05 | [Server Installation (Ubuntu)](setup-guides/05-server-install.md) |
+| 06 | [Odoo Installation & HR Configuration](setup-guides/06-odoo-install.md) |
+| 07 | [WireGuard Client Setup](setup-guides/07-wireguard-clients.md) |
+| 08 | [2FA & Backup](setup-guides/08-2fa-backup.md) |
+| 09 | [IDS Setup (Snort 3)](setup-guides/09-ids-setup.md) |
+| 10 | [Wazuh SIEM Setup](setup-guides/10-wazuh-siem.md) |
+| 11 | [OPNsense + Zenarmor NGFW Setup](setup-guides/11-opnsense-zenarmor-setup.md) |
+
+---
+
+## 📊 Current System Status (May 2026)
+
+| Component | Primary (Geekom A9 Max) | Backup (Intel N100) |
+|-----------|------------------------|---------------------|
+| OS | Ubuntu 22.04 LTS | Ubuntu 22.04 LTS |
+| Kernel | 6.17.0-23 | 6.17.0-23 |
+| Wazuh | Active | Standby |
+| DarkGhost NDR | Active | Standby |
+| SnortML | Active | Standby |
+| Snort 3 IDS | Active | Standby |
+| OPNsense VM | Active | Not configured |
+| Odoo HR | Active | Standby |
+| Backups | Daily (Odoo DB) | Weekly (config files) |
+
+---
+
+## 📋 Lessons Learned
+
+- VLAN filtering on MikroTik requires **bridge VLAN filtering** enabled — missed this initially, cost hours of troubleshooting
+- **Port mirroring (SPAN) is essential for NDR** — without it, DarkGhost only sees traffic destined for the server itself
+- Snort 3 can run in **low-memory mode** to coexist with Wazuh and other services
+- Server migration (N100 → Geekom) took 2–3 days due to IP reconfiguration and driver differences
+- Wazuh 4.x active response scripts require **JSON parsing** — positional arguments no longer work
+- Running two OpenSearch instances simultaneously (Wazuh Indexer + Shuffle) on 8GB RAM causes OOM — run them alternately
+- VirtualBox Guest Additions version must match the VirtualBox host version exactly
+- WireGuard key management must be organized from day one — created a spreadsheet for all client keys
+- Odoo 2FA must be enabled **per user** — there is no global setting
 
 ---
 
 ## 🔜 Future Improvements
 
-- Complete Security+ and Network+ certifications
+- Complete **Security+** and **Network+** certifications (in progress)
 - Offsite backups (Google Drive / cloud)
-- Complete Shuffle SOAR workflows (automated incident response)
-- Upgrade server storage to 2TB if needed
+- Complete Shuffle SOAR automated workflows
+- GDPR Art. 30 records of processing register
+- Disk encryption with LUKS (GDPR Art. 32)
+- Full disaster recovery test (restore from backup, measure RTO)
+
+---
+
+## 📈 Current Learning Path
+
+### ✅ Completed
+- TryHackMe Pre-Security, SEC0, SEC1, SEC2
+- Sophia Learning: Calculus I, College Algebra, Introduction to Information Systems, Project Management, Introduction to Web Development
+- This project — full production network with VLANs, VPN, IDS, NDR, SIEM, NGFW, SOAR
+
+### 🔄 In Progress
+- CompTIA Security+ (exam scheduled)
+- CompTIA Network+ (next in queue)
+- University of the People (enrolled)
+
+### 📅 Next 6 Months
+- Pass Security+ and Network+
+- Cloud Security fundamentals (AWS / Azure)
+- Expand Shuffle SOAR automation
+- Document disaster recovery procedure
 
 ---
 
 ## 👤 Author
 
-**Ilie Lucian** – Technical Department Manager (10+ years)  
-SEC1 Certified (TryHackMe) · Currently: Security+ & Network+  
-📧 Contact via GitHub
+**Ilie Lucian** – Technical Department Manager (10+ years)
+SEC1 Certified (TryHackMe) · Currently: Security+ & Network+
+📧 Contact via GitHub: [ilielucianno](https://github.com/ilielucianno)
+
+> Built from real-world experience managing network security, servers, and IT infrastructure for a 15-person team — without a formal degree. This repository is a living document of my cybersecurity journey.
 
 ---
 
@@ -162,9 +299,5 @@ SEC1 Certified (TryHackMe) · Currently: Security+ & Network+
 MIT License – free to use and adapt for your own infrastructure.
 
 ---
-
-## ⭐ Acknowledgments
-
-This is a living document of my cybersecurity journey. Built from real-world experience managing network security for a 15-person IT team.
 
 *Last updated: May 2026*
