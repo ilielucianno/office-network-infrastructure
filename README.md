@@ -156,24 +156,6 @@ Both tools are publicly available on GitHub: [ilielucianno](https://github.com/i
 
 ---
 
-## 📂 Repository Structure
-office-network-infrastructure/
-├── configs/                  # All configuration files
-│   ├── mikrotik/             # RouterOS configs (router, firewall, WireGuard)
-│   ├── server/               # UFW, Fail2Ban, backup script
-│   ├── switch/               # Port mirroring config
-│   └── operations/           # Security policies, incident runbook
-├── docs/                     # Documentation (hardware, migration, diagrams)
-├── operations/               # Backup procedures, accounts policy
-├── reports/                  # Weekly progress reports
-├── setup-guides/             # Step-by-step setup guides
-├── CHEATSHEET.md             # Daily operations and troubleshooting
-├── COMPLIANCE.md             # GDPR / SOC 2 / ISO 27001 compliance
-├── PENDING-TASKS.md          # Ongoing improvements
-└── RESPONSIBILITIES.md       # Role definitions
-
----
-
 ## ⚙️ Key Configuration Files
 
 | File | Purpose |
