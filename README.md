@@ -1,4 +1,4 @@
-markdown# Office Network Infrastructure
+# Office Network Infrastructure
 
 **Secure office network with VLAN segmentation, WireGuard VPN, and self-hosted Odoo HR system.**
 
