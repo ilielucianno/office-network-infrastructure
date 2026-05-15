@@ -6,7 +6,7 @@ markdown# Office Network Infrastructure
 
 ---
 
-## 📌 Overview
+##  Overview
 
 This project documents a complete, production-ready office network for a small company (3 HR offices + 10-15 remote support agents). It implements **enterprise-grade security** on a budget of ~€1,600.
 
@@ -20,7 +20,7 @@ This project documents a complete, production-ready office network for a small c
 
 ---
 
-## 🏗️ Network Architecture
+##  Network Architecture
 Internet → MikroTik Router → TP-Link Switch → HR / Support / Server / WiFi / VPN
 
 | VLAN | Name | Subnet | Purpose |
@@ -46,7 +46,7 @@ A **SPAN session (port mirroring)** on the TP-Link switch copies all inter-VLAN 
 
 ---
 
-## 🖥️ Hardware (Total ~€1,600)
+##  Hardware (Total ~€1,600)
 
 | Component | Model | Cost | Notes |
 |-----------|-------|------|-------|
@@ -65,7 +65,7 @@ All components purchased with official invoices from Cyprus suppliers (Senetic, 
 
 ---
 
-## 🔒 Security Stack (7 Detection Layers)
+##  Security Stack (7 Detection Layers)
 
 | Layer | Tool | Detection Type | Runs on |
 |-------|------|----------------|---------|
@@ -77,7 +77,7 @@ All components purchased with official invoices from Cyprus suppliers (Senetic, 
 | **Active Response** | Wazuh + iptables | Automatic SSH brute-force blocking | Ubuntu native |
 | **SOAR** | Shuffle | Alert automation, webhooks | Docker |
 
-### 🔬 Custom-Built Security Tools
+###  Custom-Built Security Tools
 
 #### DarkGhost NDR
 Anomaly-based behavioral detection system inspired by Darktrace. Monitors all network traffic via SPAN port mirroring and builds behavioral baselines per IP/device. Detects:
@@ -108,7 +108,7 @@ Both tools are publicly available on GitHub: [ilielucianno](https://github.com/i
 
 ---
 
-## 🛡️ Why This Architecture Works
+##  Why This Architecture Works
 
 | Threat | Mitigation |
 |--------|------------|
@@ -123,7 +123,7 @@ Both tools are publicly available on GitHub: [ilielucianno](https://github.com/i
 
 ---
 
-## 🔑 Key Security Implementations
+##  Key Security Implementations
 
 ### Network & Infrastructure
 
@@ -156,7 +156,7 @@ Both tools are publicly available on GitHub: [ilielucianno](https://github.com/i
 
 ---
 
-## ⚙️ Key Configuration Files
+##  Key Configuration Files
 
 | File | Purpose |
 |------|---------|
@@ -170,7 +170,7 @@ Both tools are publicly available on GitHub: [ilielucianno](https://github.com/i
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 1. **Clone the repository**
 ```bash
@@ -187,7 +187,7 @@ Both tools are publicly available on GitHub: [ilielucianno](https://github.com/i
 
 ---
 
-## 📚 Setup Guides
+##  Setup Guides
 
 | # | Guide |
 |---|-------|
@@ -205,7 +205,7 @@ Both tools are publicly available on GitHub: [ilielucianno](https://github.com/i
 
 ---
 
-## 📊 Current System Status (May 2026)
+##  Current System Status (May 2026)
 
 | Component | Primary (Geekom A9 Max) | Backup (Intel N100) |
 |-----------|------------------------|---------------------|
@@ -221,7 +221,7 @@ Both tools are publicly available on GitHub: [ilielucianno](https://github.com/i
 
 ---
 
-## 📋 Lessons Learned
+##  Lessons Learned
 
 - VLAN filtering on MikroTik requires **bridge VLAN filtering** enabled — missed this initially, cost hours of troubleshooting
 - **Port mirroring (SPAN) is essential for NDR** — without it, DarkGhost only sees traffic destined for the server itself
@@ -235,7 +235,7 @@ Both tools are publicly available on GitHub: [ilielucianno](https://github.com/i
 
 ---
 
-## 🔜 Future Improvements
+##  Future Improvements
 
 - Complete **Security+** and **Network+** certifications (in progress)
 - Offsite backups (Google Drive / cloud)
@@ -246,19 +246,19 @@ Both tools are publicly available on GitHub: [ilielucianno](https://github.com/i
 
 ---
 
-## 📈 Current Learning Path
+##  Current Learning Path
 
 ### ✅ Completed
 - TryHackMe Pre-Security, SEC0, SEC1, SEC2
 - Sophia Learning: Calculus I, College Algebra, Introduction to Information Systems, Project Management, Introduction to Web Development
 - This project — full production network with VLANs, VPN, IDS, NDR, SIEM, NGFW, SOAR
 
-### 🔄 In Progress
+### In Progress
 - CompTIA Security+ (exam scheduled)
 - CompTIA Network+ (next in queue)
 - University of the People (enrolled)
 
-### 📅 Next 6 Months
+###  Next 6 Months
 - Pass Security+ and Network+
 - Cloud Security fundamentals (AWS / Azure)
 - Expand Shuffle SOAR automation
@@ -266,11 +266,11 @@ Both tools are publicly available on GitHub: [ilielucianno](https://github.com/i
 
 ---
 
-## 👤 Author
+##  Author
 
 **Ilie Lucian** – Technical Department Manager (10+ years)
 SEC1 Certified (TryHackMe) · Currently: Security+ & Network+
-📧 Contact via GitHub: [ilielucianno](https://github.com/ilielucianno)
+Contact via GitHub: [ilielucianno](https://github.com/ilielucianno)
 
 > Built from real-world experience managing network security, servers, and IT infrastructure for a 15-person team — without a formal degree. This repository is a living document of my cybersecurity journey.
 
