@@ -1,5 +1,5 @@
 markdown# Compliance & Security Framework
-## Office Network Infrastructure – Turtle Cove Consultancy Ltd
+## Office Network Infrastructure 
 ### Cyprus / EU – May 2026
 
 **Author:** Ilie Lucian – Technical Department Manager  
