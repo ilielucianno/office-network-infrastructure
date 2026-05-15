@@ -1,16 +1,24 @@
-# Compliance & Security Framework
+markdown# Compliance & Security Framework
+## Office Network Infrastructure – Turtle Cove Consultancy Ltd
+### Cyprus / EU – May 2026
+
+**Author:** Ilie Lucian – Technical Department Manager  
+**Last updated:** May 15, 2026  
+**Repository:** https://github.com/ilielucianno/office-network-infrastructure
+
+---
 
 ## Overview
 
-This document outlines the security controls implemented to meet regulatory requirements for companies operating in Cyprus/EU. The infrastructure serves a consulting & accounting company (Turtle Cove Consultancy Ltd) providing B2B services to online gambling operators.
+This document outlines the security controls and license compliance implemented to meet regulatory requirements for companies operating in Cyprus/EU. The infrastructure serves a consulting & accounting company (Turtle Cove Consultancy Ltd) providing B2B services to online gambling operators.
 
 **Applicable regulations:** GDPR (mandatory), SOC 2 (recommended), ISO 27001 (guidance).
 
 ---
 
-## GDPR Compliance (General Data Protection Regulation)
+## Section 1 – GDPR Compliance (General Data Protection Regulation)
 
-### Status: Partial Implementation - In Progress
+**Status:** Partial Implementation – In Progress
 
 | Requirement | Implementation | Status | Due Date |
 |-------------|----------------|--------|----------|
@@ -29,6 +37,7 @@ This document outlines the security controls implemented to meet regulatory requ
 - `/home` – user data access
 
 **Commands:**
+
 ```bash
 sudo auditctl -w /etc/passwd -p wa -k identity
 sudo auditctl -w /etc/shadow -p wa -k identity
@@ -38,6 +47,7 @@ sudo auditctl -w /home -p rwxa -k user_data
 Log retention: 500MB (50MB x 10 files) – unlimited retention for GDPR compliance.
 
 **View audit logs:**
+
 ```bash
 sudo ausearch -k identity
 ```
@@ -47,6 +57,7 @@ sudo ausearch -k identity
 **Status:** ✅ Implemented (May 12, 2026)
 
 **Configuration:**
+
 ```bash
 sudo apt install unattended-upgrades -y
 sudo dpkg-reconfigure --priority=low unattended-upgrades
@@ -57,13 +68,14 @@ sudo dpkg-reconfigure --priority=low unattended-upgrades
 - Daily checks
 
 **Verify status:**
+
 ```bash
 sudo systemctl status unattended-upgrades
 ```
 
 ---
 
-## SOC 2 Trust Services Criteria (Guidance)
+## Section 2 – SOC 2 Trust Services Criteria (Guidance)
 
 | Criteria | Implementation | Status |
 |----------|----------------|--------|
@@ -76,7 +88,7 @@ sudo systemctl status unattended-upgrades
 
 ---
 
-## ISO 27001 Alignment (Annex A Controls)
+## Section 3 – ISO 27001 Alignment (Annex A Controls)
 
 | Control | Implementation | Status |
 |---------|----------------|--------|
@@ -91,7 +103,77 @@ sudo systemctl status unattended-upgrades
 
 ---
 
-## Compliance Checklist (Weekly Review)
+## Section 4 – Software License Compliance (Open Source & Commercial)
+
+**Status:** ✅ Fully Compliant – May 2026
+
+This section documents all software used in production and confirms compliance with their respective licenses. All software is used legally, either through open-source licenses that permit commercial use, commercial purchases, or internal development.
+
+### 4.1 Operating System & Virtualization
+
+| Software | Version | License | Compliance Status |
+|----------|---------|---------|-------------------|
+| Ubuntu Server | 22.04 LTS | GPLv2 | ✅ Permitted for commercial use |
+| VirtualBox | – | GPLv2 | ✅ Permitted for commercial use |
+
+### 4.2 Network & Firewall
+
+| Software | Version | License | Compliance Status |
+|----------|---------|---------|-------------------|
+| MikroTik RouterOS | – | Commercial (included with hardware) | ✅ Purchased with router – invoice on file |
+| OPNsense | – | BSD 2-Clause | ✅ Permitted for commercial use |
+| Zenarmor (free tier) | – | Free tier (proprietary) | ✅ Permitted – no payment required, no cloud data transmission |
+| WireGuard | – | GPLv2 | ✅ Permitted for commercial use |
+
+### 4.3 Security Stack (IDS, IPS, SIEM, NDR, SOAR)
+
+| Software | Version | License | Compliance Status |
+|----------|---------|---------|-------------------|
+| Snort 3 | – | GPLv2 | ✅ Permitted for commercial use |
+| Wazuh SIEM | 4.x | GPLv2 | ✅ Permitted for commercial use |
+| DarkGhost NDR | – | Proprietary (internal development) | ✅ Company-owned code. Developed internally by Ilie Lucian. |
+| SnortML | – | Proprietary (internal development) | ✅ Company-owned code. Developed internally by Ilie Lucian. |
+| Shuffle SOAR | – | Apache 2.0 | ✅ Permitted for commercial use |
+| Fail2Ban | – | GPLv2 | ✅ Permitted |
+| auditd | – | GPLv2 | ✅ Permitted |
+
+### 4.4 Web Applications & Libraries
+
+| Software | Version | License | Compliance Status |
+|----------|---------|---------|-------------------|
+| Odoo (Community) | – | LGPL | ✅ Permitted for commercial use |
+| Zoho CRM | – | Commercial SaaS | ✅ Paid subscription – contract in place |
+| Python | – | PSF License | ✅ Permitted |
+| TensorFlow | – | Apache 2.0 | ✅ Permitted |
+| Scapy | – | GPLv2 | ✅ Permitted |
+| Flask | – | BSD | ✅ Permitted |
+
+### 4.5 Custom Internal Tools – Copyright Notice
+
+| Tool | Copyright Owner | Proof of Authorship |
+|------|----------------|---------------------|
+| DarkGhost NDR | Ilie Lucian (developed internally for the company) | Source code on company laptop + GitHub commit history |
+| SnortML | Ilie Lucian (developed internally for the company) | Source code on company laptop + GitHub commit history |
+
+> **Note on Copyright:** Under Romanian, Cypriot, and EU law (Berne Convention), copyright is automatic upon creation. No registration is required. The source code on company laptop and GitHub commit history serve as sufficient proof of authorship.
+
+### 4.6 Summary – License Compliance by Category
+
+| Category | Commercial (Paid) | Open-Source (Permissive) | Proprietary (Internal) |
+|----------|-------------------|--------------------------|------------------------|
+| Operating Systems | 0 | 2 | 0 |
+| Network & Firewall | 1 (RouterOS) | 4 | 0 |
+| Security Stack | 0 | 6 | 2 |
+| Web Apps & Libraries | 1 (Zoho) | 6 | 0 |
+| **TOTAL** | **2** | **18** | **2** |
+
+### 4.7 License Compliance Declaration
+
+> *To the best of my knowledge, all software listed above is used in compliance with its respective license terms. No unlicensed commercial software is present in production. All open-source software is used under GPLv2, BSD, Apache 2.0, LGPL, or PSF licenses – all of which permit commercial use without payment. Custom internal tools (DarkGhost NDR, SnortML) are company-owned code developed internally.*
+
+---
+
+## Section 5 – Compliance Checklist (Weekly Review)
 
 | Task | Frequency | Last Run | Status |
 |------|-----------|----------|--------|
@@ -103,7 +185,7 @@ sudo systemctl status unattended-upgrades
 
 ---
 
-## Incident Response Procedures
+## Section 6 – Incident Response Procedures
 
 Runbook documents (internal, not public):
 
@@ -114,7 +196,24 @@ Runbook documents (internal, not public):
 
 ---
 
-## Next Steps (May 19 - May 30, 2026)
+## Section 7 – Hardware Inventory (Commercial Purchases)
+
+All hardware purchased legally with invoices from Cyprus suppliers (Senetic, Bionic, Skroutz).
+
+| Component | Model | Vendor | Invoice Status |
+|-----------|-------|--------|----------------|
+| Router | MikroTik hAP ac² | MikroTik / Senetic | ✅ On file |
+| Backbone Switch | TP-Link TL-SG108E | TP-Link / Bionic | ✅ On file |
+| Access Switches | 2× TP-Link TL-SG105 | TP-Link / Bionic | ✅ On file |
+| WiFi AP | Ubiquiti UniFi 6 Plus | Ubiquiti / Skroutz | ✅ On file |
+| Main Server | Geekom A9 Max | Geekom | ✅ On file |
+| Backup Server | Mini PC Intel N100 | – | ✅ Retired hardware, company owned |
+| Printer | HP LaserJet MFP 135a | HP | ✅ On file |
+| Cables | Cat6 | – | ✅ On file |
+
+---
+
+## Section 8 – Next Steps (May 19 – May 30, 2026)
 
 | Week | Task | Standard |
 |------|------|----------|
@@ -126,9 +225,30 @@ Runbook documents (internal, not public):
 
 ---
 
-## Author
+## Section 9 – Audit Q&A Preparation
 
-**Ilie Lucian** – Technical Department Manager  
-Last updated: May 12, 2026
+| Potential Question | Answer |
+|--------------------|--------|
+| "Did you pay for a Wazuh license?" | No. We use the open-source version, which is fully functional for our needs and complies with GPLv2 – it permits commercial use without payment. |
+| "Is DarkGhost developed internally?" | Yes. It is proprietary software developed internally. The company owns the usage rights. Source code is versioned on GitHub. |
+| "What license do you have for Zenarmor?" | We use the free tier. It does not send data to the cloud and is permitted for commercial use without payment. |
+| "How do you manage security risk in custom tools?" | Custom tools run in isolation on a dedicated server, are monitored via Wazuh SIEM, and code is versioned on GitHub. Any changes require testing before deployment. |
+| "Do you have proof of copyright for DarkGhost?" | Yes. The source code exists on company laptop and GitHub with commit history dating back to initial development. Under EU law, copyright is automatic upon creation – no registration is required. |
 
-> This document is a living document and will be updated as compliance requirements evolve.
+---
+
+## Section 10 – Document Version History
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0 | May 12, 2026 | Ilie Lucian | Initial document |
+| 1.1 | May 15, 2026 | Ilie Lucian | Added Software License Compliance section, Copyright notice, Audit Q&A |
+
+---
+
+> **Declaration:** To the best of my knowledge, all information in this document is accurate and complete. All security controls and compliance measures are implemented as described.
+
+**Signed,**  
+Ilie Lucian  
+Technical Department Manager  
+May 15, 2026
