@@ -10,7 +10,7 @@ markdown# Compliance & Security Framework
 
 ## Overview
 
-This document outlines the security controls and license compliance implemented to meet regulatory requirements for companies operating in Cyprus/EU. The infrastructure serves a consulting & accounting company (Turtle Cove Consultancy Ltd) providing B2B services to online gambling operators.
+This document outlines the security controls and license compliance implemented to meet regulatory requirements for companies operating in Cyprus/EU. The infrastructure serves a consulting & accounting company providing B2B services to online gambling operators.
 
 **Applicable regulations:** GDPR (mandatory), SOC 2 (recommended), ISO 27001 (guidance).
 
