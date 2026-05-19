@@ -1,4 +1,4 @@
-markdown# Compliance & Security Framework
+
 ## Office Network Infrastructure 
 ### Cyprus / EU – May 2026
 
