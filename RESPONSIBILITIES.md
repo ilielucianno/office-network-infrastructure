@@ -1,6 +1,6 @@
 # Security Responsibilities
 
-## Technical Department (Ilie Lucian – Manager)
+## Technical Department (Ilie Lucian – Managing)
 
 - Network security architecture (firewall, VLAN, VPN)
 - Security monitoring & detection (Wazuh, DarkGhost, Snort, Zenarmor)
