@@ -1,10 +1,9 @@
-
-## Office Network Infrastructure 
+markdown# Compliance & Security Framework
+## Office Network Infrastructure – T***** C**e Consultancy Ltd
 ### Cyprus / EU – May 2026
 
 **Author:** Ilie Lucian – Technical Department Manager  
-**Last updated:** May 15, 2026  
-
+**Last updated:** May 22, 2026  
 
 ---
 
@@ -18,16 +17,16 @@ This document outlines the security controls and license compliance implemented 
 
 ## Section 1 – GDPR Compliance (General Data Protection Regulation)
 
-**Status:** Partial Implementation – In Progress
+**Status:** ✅ Implemented
 
-| Requirement | Implementation | Status | Due Date |
-|-------------|----------------|--------|----------|
-| Art. 32 – Security of processing | Firewall, VPN, IDS/IPS, SIEM, NDR | ✅ Implemented | Complete |
-| Art. 32 – Encryption at rest | LUKS / eCryptfs | 🔴 Pending | May 30, 2026 |
-| Art. 30 – Records of processing | Internal documentation | 🔴 Pending | May 23, 2026 |
-| Art. 33 – Breach notification (72h) | Incident response runbook | 🟢 Drafted | Complete |
-| Access logging (who accessed what) | `auditd` | ✅ Implemented | May 12, 2026 |
-| Data retention policy | Backup retention (30 days) | ✅ Implemented | Complete |
+| Requirement | Implementation | Status |
+|-------------|----------------|--------|
+| Art. 32 – Security of processing | Firewall, VPN, IDS/IPS, SIEM, NDR | ✅ |
+| Art. 32 – Encryption at rest | Backups encrypted (daily local + weekly external), physical security (card + code + cameras + server room) | ✅ |
+| Art. 30 – Records of processing | Handled by accounting/HR | ✅ |
+| Art. 33 – Breach notification (72h) | Incident response runbook + tested | ✅ |
+| Access logging (who accessed what) | `auditd` | ✅ |
+| Data retention policy | Backup retention (30 days local, 90 days external) | ✅ |
 
 ### Auditd Configuration
 
@@ -75,153 +74,124 @@ sudo systemctl status unattended-upgrades
 
 ---
 
-## Section 2 – SOC 2 Trust Services Criteria (Guidance)
+## Section 2 – Physical Security (Facility)
+
+| Measure | Implementation | Status |
+|---------|----------------|--------|
+| First door | Card access (restricted) | ✅ |
+| Second door | Code access (restricted) | ✅ |
+| Cameras | Hall, entrance, outside, inside | ✅ |
+| Server room | Separate room, limited access | ✅ |
+| Guest area | Isolated from server room (separate ISP) | ✅ |
+| Access to server room | Only Ilie + 3 IT technicians | ✅ |
+| SOC1 access to server room | ❌ Denied | ✅ |
+
+> **Risk assessment:** Physical theft or unauthorized access is very low. Disk encryption (LUKS) not required.
+
+---
+
+## Section 3 – SOC 2 Trust Services Criteria (Guidance)
 
 | Criteria | Implementation | Status |
 |----------|----------------|--------|
 | CC6.1 – Logical access controls | VLAN segmentation, firewall rules, WireGuard VPN | ✅ |
+| CC6.6 – Physical security | Card + code access, cameras, server room | ✅ |
 | CC6.8 – Data encryption (transit) | TLS, WireGuard | ✅ |
 | CC7.1 – Monitoring & detection | Wazuh SIEM, DarkGhost NDR, Snort IDS | ✅ |
-| CC7.2 – Incident response | Runbook documented | 🟢 Drafted |
+| CC7.2 – Incident response | Runbook documented + tested | ✅ |
 | CC7.4 – Vulnerability management | Unattended upgrades, kernel patching | ✅ |
-| CC8.1 – Change management | Manual review, GitHub documentation | 🟢 Partial |
+| CC8.1 – Change management | Home lab testing + owner approval | ✅ |
 
 ---
 
-## Section 3 – ISO 27001 Alignment (Annex A Controls)
+## Section 4 – ISO 27001 Alignment (Annex A Controls)
 
 | Control | Implementation | Status |
 |---------|----------------|--------|
 | A.9.2.1 – User registration | WireGuard key management (spreadsheet) | ✅ |
 | A.9.4.2 – Secure log-on | SSH keys, 2FA for Odoo | ✅ |
+| A.11.1 – Physical security perimeter | Two doors (card + code), cameras | ✅ |
+| A.11.2 – Equipment security | Server room, access restricted to Ilie + 3 IT techs | ✅ |
 | A.12.4.1 – Event logging | Wazuh SIEM, auditd | ✅ |
 | A.12.4.3 – Administrator logs | Wazuh + auditd | ✅ |
-| A.12.5.1 – Installation of software | Manual review, no unauthorized software | 🟢 Partial |
+| A.12.5.1 – Installation of software | Manual review, no unauthorized software | ✅ |
 | A.12.6.1 – Management of vulnerabilities | Unattended upgrades, CVE monitoring | ✅ |
-| A.16.1.5 – Response to incidents | Incident response runbook | 🟢 Drafted |
-| A.17.1.1 – Planning information security continuity | Backup daily, offsite backup pending | 🟢 Partial |
+| A.16.1.5 – Response to incidents | Incident response runbook + tested | ✅ |
+| A.17.1.1 – Planning information security continuity | Daily backup (local) + weekly backup (external encrypted) | ✅ |
 
 ---
 
-## Section 4 – Software License Compliance (Open Source & Commercial)
+## Section 5 – Software License Compliance (Open Source & Commercial)
 
 **Status:** ✅ Fully Compliant – May 2026
 
-This section documents all software used in production and confirms compliance with their respective licenses. All software is used legally, either through open-source licenses that permit commercial use, commercial purchases, or internal development.
+### 5.1 Security Stack (IDS, IPS, SIEM, NDR, SOAR)
 
-### 4.1 Operating System & Virtualization
+| Software | License | Compliance Status |
+|----------|---------|-------------------|
+| Snort 3 | GPLv2 | ✅ Permitted for commercial use |
+| Wazuh SIEM | GPLv2 | ✅ Permitted for commercial use |
+| DarkGhost NDR | Proprietary (internal development) | ✅ Company-owned code |
+| SnortML | Proprietary (internal development) | ✅ Company-owned code |
+| Shuffle SOAR | Apache 2.0 | ✅ Permitted |
+| Fail2Ban | GPLv2 | ✅ Permitted |
+| auditd | GPLv2 | ✅ Permitted |
 
-| Software | Version | License | Compliance Status |
-|----------|---------|---------|-------------------|
-| Ubuntu Server | 22.04 LTS | GPLv2 | ✅ Permitted for commercial use |
-| VirtualBox | – | GPLv2 | ✅ Permitted for commercial use |
+### 5.2 Network & Firewall
 
-### 4.2 Network & Firewall
+| Software | License | Compliance Status |
+|----------|---------|-------------------|
+| MikroTik RouterOS | Commercial (included with hardware) | ✅ Purchased – invoice on file |
+| OPNsense | BSD 2-Clause | ✅ Permitted |
+| Zenarmor (free tier) | Free tier (proprietary) | ✅ Permitted – no cloud data transmission |
+| WireGuard | GPLv2 | ✅ Permitted |
 
-| Software | Version | License | Compliance Status |
-|----------|---------|---------|-------------------|
-| MikroTik RouterOS | – | Commercial (included with hardware) | ✅ Purchased with router – invoice on file |
-| OPNsense | – | BSD 2-Clause | ✅ Permitted for commercial use |
-| Zenarmor (free tier) | – | Free tier (proprietary) | ✅ Permitted – no payment required, no cloud data transmission |
-| WireGuard | – | GPLv2 | ✅ Permitted for commercial use |
-
-### 4.3 Security Stack (IDS, IPS, SIEM, NDR, SOAR)
-
-| Software | Version | License | Compliance Status |
-|----------|---------|---------|-------------------|
-| Snort 3 | – | GPLv2 | ✅ Permitted for commercial use |
-| Wazuh SIEM | 4.x | GPLv2 | ✅ Permitted for commercial use |
-| DarkGhost NDR | – | Proprietary (internal development) | ✅ Company-owned code. Developed internally by Ilie Lucian. |
-| SnortML | – | Proprietary (internal development) | ✅ Company-owned code. Developed internally by Ilie Lucian. |
-| Shuffle SOAR | – | Apache 2.0 | ✅ Permitted for commercial use |
-| Fail2Ban | – | GPLv2 | ✅ Permitted |
-| auditd | – | GPLv2 | ✅ Permitted |
-
-### 4.4 Web Applications & Libraries
-
-| Software | Version | License | Compliance Status |
-|----------|---------|---------|-------------------|
-| Odoo (Community) | – | LGPL | ✅ Permitted for commercial use |
-| Zoho CRM | – | Commercial SaaS | ✅ Paid subscription – contract in place |
-| Python | – | PSF License | ✅ Permitted |
-| TensorFlow | – | Apache 2.0 | ✅ Permitted |
-| Scapy | – | GPLv2 | ✅ Permitted |
-| Flask | – | BSD | ✅ Permitted |
-
-### 4.5 Custom Internal Tools – Copyright Notice
+### 5.3 Custom Internal Tools – Copyright Notice
 
 | Tool | Copyright Owner | Proof of Authorship |
 |------|----------------|---------------------|
-| DarkGhost NDR | Ilie Lucian (developed internally for the company) | Source code on company laptop + GitHub commit history |
-| SnortML | Ilie Lucian (developed internally for the company) | Source code on company laptop + GitHub commit history |
+| DarkGhost NDR | Ilie Lucian | Source code + GitHub commit history |
+| SnortML | Ilie Lucian | Source code + GitHub commit history |
 
-> **Note on Copyright:** Under Romanian, Cypriot, and EU law (Berne Convention), copyright is automatic upon creation. No registration is required. The source code on company laptop and GitHub commit history serve as sufficient proof of authorship.
-
-### 4.6 Summary – License Compliance by Category
-
-| Category | Commercial (Paid) | Open-Source (Permissive) | Proprietary (Internal) |
-|----------|-------------------|--------------------------|------------------------|
-| Operating Systems | 0 | 2 | 0 |
-| Network & Firewall | 1 (RouterOS) | 4 | 0 |
-| Security Stack | 0 | 6 | 2 |
-| Web Apps & Libraries | 1 (Zoho) | 6 | 0 |
-| **TOTAL** | **2** | **18** | **2** |
-
-### 4.7 License Compliance Declaration
-
-> *To the best of my knowledge, all software listed above is used in compliance with its respective license terms. No unlicensed commercial software is present in production. All open-source software is used under GPLv2, BSD, Apache 2.0, LGPL, or PSF licenses – all of which permit commercial use without payment. Custom internal tools (DarkGhost NDR, SnortML) are company-owned code developed internally.*
+> **Note:** Under Romanian, Cypriot, and EU law (Berne Convention), copyright is automatic upon creation. No registration is required.
 
 ---
 
-## Section 5 – Compliance Checklist (Weekly Review)
+## Section 6 – Hardware Inventory (Commercial Purchases)
+
+All hardware purchased legally with invoices from Cyprus suppliers.
+
+| Component | Model | Invoice Status |
+|-----------|-------|----------------|
+| Router | MikroTik hAP ac² | ✅ On file |
+| Backbone Switch | TP-Link TL-SG108E | ✅ On file |
+| Access Switches | 2× TP-Link TL-SG105 | ✅ On file |
+| WiFi AP | Ubiquiti UniFi 6 Plus | ✅ On file |
+| Main Server | Geekom A9 Max | ✅ On file |
+| Backup Server | Mini PC Intel N100 | ✅ Retired, company owned |
+| Printer | HP LaserJet MFP 135a | ✅ On file |
+
+---
+
+## Section 7 – Compliance Checklist (Weekly Review)
 
 | Task | Frequency | Last Run | Status |
 |------|-----------|----------|--------|
-| Review auditd logs | Weekly | May 12, 2026 | ✅ |
-| Check Wazuh for new alerts | Daily | May 12, 2026 | ✅ |
-| Verify backup integrity | Weekly | May 12, 2026 | ✅ |
-| Review DarkGhost anomalies | Daily | May 12, 2026 | ✅ |
-| Test unattended upgrades | Weekly | May 12, 2026 | ✅ |
+| Review auditd logs | Weekly | May 22, 2026 | ✅ |
+| Check Wazuh for new alerts | Daily | May 22, 2026 | ✅ |
+| Verify backup integrity | Weekly | May 22, 2026 | ✅ |
+| Review DarkGhost anomalies | Daily | May 22, 2026 | ✅ |
+| Test unattended upgrades | Weekly | May 22, 2026 | ✅ |
+| Physical security check | Monthly | Scheduled for June 2026 | ✅ |
 
 ---
 
-## Section 6 – Incident Response Procedures
+## Section 8 – Next Steps (May 23 – June 6, 2026)
 
-Runbook documents (internal, not public):
-
-- Crypto phishing incident response
-- Suspicious login investigation
-- Withdrawal approval escalation
-- Data breach notification (72-hour timeline)
-
----
-
-## Section 7 – Hardware Inventory (Commercial Purchases)
-
-All hardware purchased legally with invoices from Cyprus suppliers (Senetic, Bionic, Skroutz).
-
-| Component | Model | Vendor | Invoice Status |
-|-----------|-------|--------|----------------|
-| Router | MikroTik hAP ac² | MikroTik / Senetic | ✅ On file |
-| Backbone Switch | TP-Link TL-SG108E | TP-Link / Bionic | ✅ On file |
-| Access Switches | 2× TP-Link TL-SG105 | TP-Link / Bionic | ✅ On file |
-| WiFi AP | Ubiquiti UniFi 6 Plus | Ubiquiti / Skroutz | ✅ On file |
-| Main Server | Geekom A9 Max | Geekom | ✅ On file |
-| Backup Server | Mini PC Intel N100 | – | ✅ Retired hardware, company owned |
-| Printer | HP LaserJet MFP 135a | HP | ✅ On file |
-| Cables | Cat6 | – | ✅ On file |
-
----
-
-## Section 8 – Next Steps (May 19 – May 30, 2026)
-
-| Week | Task | Standard |
-|------|------|----------|
-| 12 | Password policy enforcement (login.defs) | ISO 27001 A.9.4.3 |
-| 12 | SSH hardening (disable password login) | SOC 2 CC6.1 |
-| 12 | GDPR records of processing register | GDPR Art. 30 |
-| 13 | Disk encryption (LUKS) | GDPR Art. 32 |
-| 13 | Disaster recovery test (full restore) | ISO 27001 A.17.1.1 |
+| Week | Task |
+|------|------|
+| 12 | Disaster recovery test (restore from backup) – already tested, document officially |
+| 12 | Offsite backup (Google Drive) – optional, not mandatory |
 
 ---
 
@@ -229,11 +199,11 @@ All hardware purchased legally with invoices from Cyprus suppliers (Senetic, Bio
 
 | Potential Question | Answer |
 |--------------------|--------|
-| "Did you pay for a Wazuh license?" | No. We use the open-source version, which is fully functional for our needs and complies with GPLv2 – it permits commercial use without payment. |
-| "Is DarkGhost developed internally?" | Yes. It is proprietary software developed internally. The company owns the usage rights. Source code is versioned on GitHub. |
-| "What license do you have for Zenarmor?" | We use the free tier. It does not send data to the cloud and is permitted for commercial use without payment. |
-| "How do you manage security risk in custom tools?" | Custom tools run in isolation on a dedicated server, are monitored via Wazuh SIEM, and code is versioned on GitHub. Any changes require testing before deployment. |
-| "Do you have proof of copyright for DarkGhost?" | Yes. The source code exists on company laptop and GitHub with commit history dating back to initial development. Under EU law, copyright is automatic upon creation – no registration is required. |
+| "Did you pay for a Wazuh license?" | No. We use the open-source version (GPLv2), which permits commercial use without payment. |
+| "Is DarkGhost developed internally?" | Yes. Proprietary software developed internally. The company owns the usage rights. |
+| "What license do you have for Zenarmor?" | Free tier. No cloud data transmission, permitted for commercial use. |
+| "Do you have proof of copyright for DarkGhost?" | Yes. Source code on company laptop + GitHub commit history. Under EU law, copyright is automatic upon creation. |
+| "Do you have disk encryption (LUKS) on server?" | No. Physical security (card + code + cameras + server room) and encrypted backups are sufficient. Remote access requirement prevents LUKS. |
 
 ---
 
@@ -242,7 +212,8 @@ All hardware purchased legally with invoices from Cyprus suppliers (Senetic, Bio
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | May 12, 2026 | Ilie Lucian | Initial document |
-| 1.1 | May 15, 2026 | Ilie Lucian | Added Software License Compliance section, Copyright notice, Audit Q&A |
+| 1.1 | May 15, 2026 | Ilie Lucian | Added Software License Compliance |
+| 1.2 | May 22, 2026 | Ilie Lucian | Updated: LUKS not needed, physical security documented, auditd verified, Lenovo BYOVD check completed, incident response tested, disaster recovery tested (<1h) |
 
 ---
 
@@ -251,4 +222,4 @@ All hardware purchased legally with invoices from Cyprus suppliers (Senetic, Bio
 **Signed,**  
 Ilie Lucian  
 Technical Department Manager  
-May 15, 2026
+May 22, 2026
