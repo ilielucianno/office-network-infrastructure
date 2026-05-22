@@ -4,8 +4,8 @@
 
 This document tracks pending security and compliance tasks for the office network infrastructure. Tasks are prioritized by deadline and impact.
 
-**Last updated:** May 12, 2026  
-**Next review:** May 19, 2026
+**Last updated:** May 22, 2026  
+**Next review:** May 29, 2026
 
 ---
 
@@ -13,63 +13,34 @@ This document tracks pending security and compliance tasks for the office networ
 
 | Task | Deadline | Priority | Status |
 |------|----------|----------|--------|
-| Disk encryption (LUKS) | May 30, 2026 | 🔴 High | Not started |
-| Disaster recovery test (restore from backup) | May 31, 2026 | 🟡 Medium | Not started |
+| Disaster recovery test (restore from backup) | May 31, 2026 | 🟡 Medium | Completed (tested, <1h) |
+| Offsite backup (Google Drive) | Q3 2026 | 🟢 Low | Optional – not mandatory |
 
 ---
 
 ## Task Details
 
-### 1. Disk Encryption (LUKS)
-
-**Description:** Encrypt the Ubuntu host disk on the physical server at the office (Geekom A9 Max). This protects all data (including OPNsense and Windows VMs) in case of physical theft.
-
-**Why needed:** GDPR Article 32 – "Security of processing" – requires encryption for stored personal data.
-
-**Method:** Reinstall Ubuntu with LUKS encryption (full disk encryption).
-
-**Prerequisites:**
-- Full backup of server (see Backup Procedures)
-- External disk for backup storage
-- Scheduled weekend downtime (approximately 4-6 hours)
-
-**Steps:**
-1. Full backup to external SSD (`/etc`, `/home`, `/var/lib/docker`, VirtualBox VMs)
-2. Boot from Ubuntu Live USB
-3. Install Ubuntu with "Encrypt the new Ubuntu installation for security"
-4. Set strong encryption password (store in Standard Notes)
-5. Restore backup and VMs
-6. Verify all services operational
-
-**Deadline:** May 30, 2026
-
-**Responsible:** Ilie Lucian
-
----
-
-### 2. Disaster Recovery Test (Restore from Backup)
+### 1. Disaster Recovery Test (Restore from Backup)
 
 **Description:** Simulate complete server failure and test the ability to restore from backup on the backup server (Intel N100).
 
 **Why needed:** A backup that cannot be restored is not a backup. Testing ensures recovery is actually possible.
 
-**Steps:**
-1. Take primary server offline
-2. Restore latest backup to backup server
-3. Start all services (Wazuh, DarkGhost, SQL Detector, OPNsense VM)
-4. Measure recovery time
-5. Document any issues
-6. Restore primary server back online
-
-**Expected recovery time:** 30-45 minutes
-
-**Deadline:** May 31, 2026
+**Result:** ✅ Tested – recovery completed in under 1 hour. All services operational after restore.
 
 **Responsible:** Ilie Lucian
 
+### 2. Offsite Backup (Google Drive)
+
+**Description:** Optional cloud backup for additional redundancy.
+
+**Status:** Not started – not required for compliance. Local + external encrypted backups are sufficient.
+
+**Responsible:** Ilie Lucian (if decided)
+
 ---
 
-## Completed Tasks (May 12, 2026)
+## Completed Tasks (May 12-22, 2026)
 
 | Task | Completion Date |
 |------|-----------------|
@@ -81,15 +52,26 @@ This document tracks pending security and compliance tasks for the office networ
 | Security awareness training documented | May 12, 2026 |
 | Change management policy documented | May 12, 2026 |
 | GDPR Art. 30 – Records of Processing | Handled by accounting/HR |
+| Lenovo BYOVD vulnerability audit (3 laptops) | May 22, 2026 |
+| Physical security documented | May 22, 2026 |
+| Disaster recovery test (restore from backup) | May 22, 2026 |
+
+---
+
+## Cancelled / Not Needed Tasks
+
+| Task | Reason |
+|------|--------|
+| Disk encryption (LUKS) | Physical security sufficient (card + code + cameras + server room), remote access requirement prevents LUKS, backups already encrypted |
 
 ---
 
 ## Notes
 
-- All passwords for encryption and critical systems are stored in Standard Notes (master password protected)
-- Backup server (Intel N100) is available for disaster recovery testing
-- Offsite backup (Google Drive) is planned for Q3 2026
-- GDPR Art. 30 (Records of Processing) is the responsibility of the accounting/HR department, not IT
+- All passwords for critical systems are stored in Standard Notes (master password protected)
+- Backup server (Intel N100) is available – tested, recovery <1h
+- Offsite backup (Google Drive) is optional – not required for compliance
+- GDPR Art. 30 (Records of Processing) is the responsibility of accounting/HR, not IT
 
 ---
 
@@ -97,4 +79,4 @@ This document tracks pending security and compliance tasks for the office networ
 
 **Ilie Lucian** – Technical Department Manager
 
-*This document will be updated weekly.*
+
