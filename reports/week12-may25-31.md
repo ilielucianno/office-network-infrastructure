@@ -1,94 +1,99 @@
 # Weekly Progress Report: May 25 – May 31, 2026
 
-## Complete Network Reconfiguration & Disaster Recovery Drill
+## Network Reconfiguration & Disaster Recovery Drill
 
 **Author:** Ilie Lucian
-**Scope:** Full MikroTik router reconfiguration, network topology optimization, and switch setup.
+**Scope:** Complete MikroTik router reconfiguration from factory defaults
 
 ### 1. Overview
-This week, as part of a planned disaster recovery drill and knowledge refresh, the entire office network was decommissioned and rebuilt from scratch. All configurations were reapplied manually via WebFig, and the physical topology was optimized for better network visibility (NDR/SPAN).
+This week, as part of a disaster recovery drill and knowledge refresh, the MikroTik router (hAP ac²) was reset to factory settings and fully reconfigured from scratch. All existing configurations (VLANs, firewall, DHCP, NAT, port forwarding) were reapplied manually via WebFig.
 
 ### 2. Actions Completed
 
-#### 2.1. Physical Topology Change
-- **Before:** Server was connected directly to Router (ether2), limiting traffic visibility for DarkGhost NDR.
-- **After:** Migrated the main server to the managed switch (TP-Link TL-SG108E). Port ether2 on the router is now reserved.
-- **Result:** The server can now receive mirrored traffic (SPAN) from all network segments.
+#### 2.1. MikroTik Router (hAP ac²) – Full Reconfiguration
 
-#### 2.2. MikroTik Router (hAP ac²) – Full Reconfiguration
-Reset the router to factory settings and reconfigured all services via WebFig (browser interface), without using WinBox due to the Linux-based environment.
+**Initial State:**
+- Router reset to factory defaults
+- Internet cable connected to ether1 (WAN)
+- Main switch connected to ether3
+- Server connected to switch
 
-**Steps executed on the router:**
-1.  **WAN Setup:** Renamed `ether1` to `WAN`, configured DHCP client on WAN.
-2.  **Bridge & VLANs:**
-    - Created `bridge-LAN` with **VLAN Filtering enabled** (critical for inter-VLAN routing).
-    - Added `ether3` (connected to main switch) to the bridge.
-    - Created VLANs: 10 (HR), 20 (Support), 30 (Server).
-3.  **IP & DHCP:**
-    - Assigned gateways: `192.168.10.1/24`, `192.168.20.1/24`, `192.168.30.1/24`.
-    - Configured DHCP servers for each VLAN with lease time 1 day and DNS `8.8.8.8,1.1.1.1`.
-4.  **Firewall Rules (Inter-VLAN Isolation):**
-    - Rule 1: Accept established/related.
-    - Rule 2: Allow HR → Server.
-    - Rule 3: Allow VPN (future) → HR & Server.
-    - Rule 4: Block Support → HR.
-    - Rule 5: Block Support → Server.
-    - Rule 6: Block HR → Support.
-    - Rule 7: Block all inter-VLAN traffic by default.
-5.  **NAT & DNS:**
-    - Added NAT masquerade for internet access (srcnat, out-interface=WAN).
-    - Enabled DNS "Allow Remote Requests".
-6.  **WireGuard Port Forwarding:**
-    - DNAT rule: UDP `dst-port=51820` → `to-addresses=192.168.30.10` (OPNsense VM).
-    - Filter rule: Allow UDP 51820 on `input` chain.
+**Configuration Steps (all via WebFig):**
 
-#### 2.3. TP-Link Switch (TL-SG108E) – Port Mirroring (SPAN)
-- **Purpose:** Enable DarkGhost NDR to monitor all inter-VLAN and lateral traffic.
-- **Configuration:**
-    - Accessed switch via `192.168.0.1` (static IP on laptop).
-    - Activated `Port Mirroring` in `Advanced` menu.
-    - Source Port: Port connected to Router (monitor all traffic).
-    - Destination Port: Port connected to the Ubuntu Server (DarkGhost).
+| Step | Configuration |
+|------|---------------|
+| 1 | Changed admin password |
+| 2 | Renamed ether1 to "WAN" |
+| 3 | Added DHCP client on WAN interface |
+| 4 | Created bridge-LAN with VLAN Filtering enabled |
+| 5 | Added ether3 to bridge-LAN |
+| 6 | Created VLANs: 10 (HR), 20 (Support), 30 (Server) |
+| 7 | Assigned IP addresses: 192.168.10.1/24, 192.168.20.1/24, 192.168.30.1/24 |
+| 8 | Configured DHCP servers for each VLAN (lease time 1 day, DNS 8.8.8.8,1.1.1.1) |
 
-#### 2.4. Connectivity & VPN Validation
-- **WireGuard VPN:** Tested successfully from an external guest network. Connection established via OPNsense VM (running on the server), using the port forwarding rule configured on MikroTik.
-- **Internal Devices:** Verified that devices receive correct IPs from their respective VLAN DHCP pools.
+**Firewall Rules (in order):**
 
-### 3. Tools & Interfaces Used
-| Tool | Purpose |
-| :--- | :--- |
-| **WebFig** | 100% of router configuration (browser-based, no WinBox due to Ubuntu environment). |
-| **RouterOS Terminal** | Not used. All changes applied via WebFig GUI. |
-| **TP-Link Web Interface** | Port mirroring configuration. |
-| **Ubuntu Server** | Hosting OPNsense VM (WireGuard) and DarkGhost NDR. |
+| Order | Rule | Action |
+|-------|------|--------|
+| 1 | Established/related connections | Accept |
+| 2 | HR → Server | Accept |
+| 3 | VPN → HR & Server | Accept |
+| 4 | Support → HR | Drop |
+| 5 | Support → Server | Drop |
+| 6 | HR → Support | Drop |
+| 7 | All inter-VLAN traffic | Drop |
 
-### 4. Lessons Learned / Reaffirmed
-1.  **Bridge VLAN Filtering:** This must be enabled on the main bridge before VLANs can pass traffic correctly.
-2.  **Port Mirroring:** For effective NDR, the server must be connected to the **switch** (not the router) and the switch must mirror all traffic to that port.
-3.  **Router vs. Firewall VM:** Keeping WireGuard on OPNsense (behind a port forward on MikroTik) is cleaner than hosting it on the router, especially when the server already runs multiple security services.
-4.  **WebFig is sufficient:** No feature required for this production network was missing in WebFig compared to WinBox. The interface is fully capable for VLAN, firewall, NAT, and port forwarding configurations.
+**NAT & DNS:**
+- Added NAT masquerade for internet access
+- Enabled DNS Allow Remote Requests
 
-### 5. Current State (as of May 31, 2026)
+#### 2.2. WireGuard Port Forwarding (to OPNsense VM)
+
+| Rule Type | Configuration |
+|-----------|---------------|
+| DNAT | chain=dstnat, protocol=udp, dst-port=51820, action=dst-nat, to-addresses=192.168.30.10, to-ports=51820 |
+| Filter | chain=input, protocol=udp, dst-port=51820, action=accept |
+| Static Route | dst-address=10.0.0.0/24, gateway=192.168.30.10 |
+
+**Result:** WireGuard connection tested successfully from external network.
+
+#### 2.3. Switch Configuration (TP-Link TL-SG108E)
+
+- Port mirroring (SPAN) verified active
+- Mirror destination: Server port
+- Mirror source: Router port
+- Purpose: DarkGhost NDR monitors all inter-VLAN traffic
+
+### 3. Testing Results
+
+| Test | Result |
+|------|--------|
+| Device in VLAN 10 receives IP | Pass |
+| Device in VLAN 20 receives IP | Pass |
+| Device in VLAN 30 receives IP | Pass |
+| Internet access from any VLAN | Pass |
+| Support → HR traffic | Blocked |
+| Support → Server traffic | Blocked |
+| HR → Server traffic | Allowed |
+| WireGuard connection | Pass |
+
+### 4. Current System State (May 31, 2026)
+
 | Component | Status |
-| :--- | :--- |
-| MikroTik Router | ✅ Fully reconfigured, backed up |
-| VLANs (10,20,30) | ✅ Operational |
-| Firewall Isolation | ✅ Verified (Support → HR blocked) |
-| Port Mirroring | ✅ Active on TP-Link switch |
-| WireGuard (via OPNsense) | ✅ Reachable from internet |
-| Server (Ubuntu) | ✅ Connected to switch port 8 (mirror destination) |
-| Internet Access | ✅ Working on all VLANs |
+|-----------|--------|
+| MikroTik router | Configured, backup saved |
+| VLANs (10,20,30) | Operational |
+| Firewall isolation | Verified |
+| Port mirroring | Active |
+| WireGuard | Reachable from internet |
+| DHCP servers | Running |
+| Internet access | Working |
 
-### 6. Next Steps (Planned)
-- Offsite backup testing (Google Drive).
-- Complete Shuffle SOAR automation workflows.
-- Document full DR runbook with RTO < 1h.
+### 5. Notes
 
-### 7. Notes for the Repository
-- Configuration files (`.rsc`, `.txt`) are up-to-date in `configs/`.
-- The new physical topology is reflected in `docs/network-diagram.md` (to be updated).
+- WebFig was used for all configurations (no WinBox required)
+- WireGuard remains on OPNsense VM by design
+- Configuration backup saved to Files section
 
 ---
-**Prepared by:** Ilie Lucian  
-**Date:** May 31, 2026  
-**Related documentation:** `PENDING-TASKS.md`, `CHEATSHEET.md`
+**Date:** May 31, 2026
