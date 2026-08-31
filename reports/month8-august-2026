@@ -1,0 +1,20 @@
+# Monthly Operations Report – August 2026
+
+**Period:** August 1, 2026 – August 31, 2026  
+**Status:** Completed (Monitoring Flag Active)
+
+## 1. Executed Tasks
+- **System-Wide Updates**: Applied the latest stable updates to all network equipment, workstations, and servers.
+- **Configuration Backups**: Performed a complete save of all current configurations and critical data. Everything is backed up to date.
+- **Hardware Maintenance (HR Department)**: On August 10, replaced a faulty network cable in the HR department that had started causing intermittent connectivity issues. The cable was swapped out entirely using a spare unit from inventory. The issue has been fully resolved.
+
+## 2. Incidents & Anomalies
+- **Switch Power Cycling**: The main switch unit required manual power cycling **twice** during August. 
+- **Observation**: This behavior was not present in previous months. The frequent reboots suggest a potential issue with the power supply unit (PSU) or internal stability.
+
+## 3. Action Points & Recommendations
+- **Active Monitoring**: The switch will be closely monitored over the next few weeks.
+- **Contingency Plan**: If the power cycling repeats or any instability is detected in September, a thorough, detailed diagnostic will be initiated. This includes deep log analysis, hardware stress testing, and potentially replacing the PSU or the unit itself.
+
+## 4. Overall Status
+Aside from the monitored switch behavior, the entire infrastructure remained stable and operational throughout August. All systems are secure, patched, and backed up. We are prepared to escalate the switch investigation if necessary in September.
