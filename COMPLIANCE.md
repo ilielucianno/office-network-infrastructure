@@ -11,7 +11,7 @@ markdown# Compliance & Security Framework
 
 This document outlines the security controls and license compliance implemented to meet regulatory requirements for companies operating in Cyprus/EU. The infrastructure serves a consulting & accounting company providing B2B services to online gambling operators.
 
-**Applicable regulations:** GDPR (mandatory), SOC 2 (recommended), ISO 27001 (guidance).
+**Applicable regulations:** GDPR (mandatory), ISO 27001 (guidance).
 
 ---
 
@@ -90,21 +90,7 @@ sudo systemctl status unattended-upgrades
 
 ---
 
-## Section 3 – SOC 2 Trust Services Criteria (Guidance)
-
-| Criteria | Implementation | Status |
-|----------|----------------|--------|
-| CC6.1 – Logical access controls | VLAN segmentation, firewall rules, WireGuard VPN | ✅ |
-| CC6.6 – Physical security | Card + code access, cameras, server room | ✅ |
-| CC6.8 – Data encryption (transit) | TLS, WireGuard | ✅ |
-| CC7.1 – Monitoring & detection | Wazuh SIEM, DarkGhost NDR, Snort IDS | ✅ |
-| CC7.2 – Incident response | Runbook documented + tested | ✅ |
-| CC7.4 – Vulnerability management | Unattended upgrades, kernel patching | ✅ |
-| CC8.1 – Change management | Home lab testing + owner approval | ✅ |
-
----
-
-## Section 4 – ISO 27001 Alignment (Annex A Controls)
+## Section 3 – ISO 27001 Alignment (Annex A Controls)
 
 | Control | Implementation | Status |
 |---------|----------------|--------|
@@ -121,7 +107,7 @@ sudo systemctl status unattended-upgrades
 
 ---
 
-## Section 5 – Software License Compliance (Open Source & Commercial)
+## Section 4 – Software License Compliance (Open Source & Commercial)
 
 **Status:** ✅ Fully Compliant – May 2026
 
@@ -157,7 +143,7 @@ sudo systemctl status unattended-upgrades
 
 ---
 
-## Section 6 – Hardware Inventory (Commercial Purchases)
+## Section 5 – Hardware Inventory (Commercial Purchases)
 
 All hardware purchased legally with invoices from Cyprus suppliers.
 
@@ -173,7 +159,7 @@ All hardware purchased legally with invoices from Cyprus suppliers.
 
 ---
 
-## Section 7 – Compliance Checklist (Weekly Review)
+## Section 6 – Compliance Checklist (Weekly Review)
 
 | Task | Frequency | Last Run | Status |
 |------|-----------|----------|--------|
@@ -186,16 +172,7 @@ All hardware purchased legally with invoices from Cyprus suppliers.
 
 ---
 
-## Section 8 – Next Steps (May 23 – June 6, 2026)
-
-| Week | Task |
-|------|------|
-| 12 | Disaster recovery test (restore from backup) – already tested, document officially |
-| 12 | Offsite backup (Google Drive) – optional, not mandatory |
-
----
-
-## Section 9 – Audit Q&A Preparation
+## Section 7 – Audit Q&A Preparation
 
 | Potential Question | Answer |
 |--------------------|--------|
@@ -207,13 +184,14 @@ All hardware purchased legally with invoices from Cyprus suppliers.
 
 ---
 
-## Section 10 – Document Version History
+## Section 8 – Document Version History
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | May 12, 2026 | Ilie Lucian | Initial document |
 | 1.1 | May 15, 2026 | Ilie Lucian | Added Software License Compliance |
 | 1.2 | May 22, 2026 | Ilie Lucian | Updated: LUKS not needed, physical security documented, auditd verified, Lenovo BYOVD check completed, incident response tested, disaster recovery tested (<1h) |
+| 1.3 | Nov 10, 2026 | Ilie Lucian | Removed SOC 2 guidance and expired next steps; network decommissioned after the company closed on 1 November 2026 |
 
 ---
 

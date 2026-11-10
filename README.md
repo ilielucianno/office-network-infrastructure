@@ -85,7 +85,7 @@ All components purchased with official invoices from EU suppliers (Amazon ES, Se
 
 **SnortML** – ML-powered SQL injection detector built with TensorFlow + Scapy + Flask. Real-time packet inspection, TensorFlow 2.21.0. Evaluation is being re-run on live traffic; the original results came from a synthetic dataset.
 
-Both tools are publicly available on GitHub: [ilielucianno](https://github.com/ilielucianno)
+SnortML is published on GitHub; DarkGhost has its documentation on GitHub, with the source code kept private: [ilielucianno](https://github.com/ilielucianno)
 
 ### Service Access URLs
 
