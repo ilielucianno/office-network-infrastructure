@@ -5,7 +5,7 @@
 
 ## Overview
 
-This project documents a complete, production-ready office network for a small company (3 HR offices + 10-15 remote support agents). It implements enterprise-grade security on a budget of ~€1,600.
+This project documents a complete, production-ready office network for a small company (3 HR/accounting offices + a fluctuating remote support team: about 15 agents in recent years, up to 40 per shift earlier). It implements enterprise-grade security on a budget of ~€1,600.
 
 - **VLAN isolation** – HR, Support, Server completely separated
 - **WireGuard VPN** – key-based, unique keys per user
@@ -81,7 +81,7 @@ All components purchased with official invoices from EU suppliers (Amazon ES, Se
 
 **DarkGhost NDR** – Anomaly-based behavioral detection system inspired by Darktrace. Monitors all network traffic via SPAN port mirroring, builds behavioral baselines per IP/device, and detects port scans, lateral movement, and unusual connection patterns. Real-time alerts via Flask dashboard.
 
-**SnortML** – ML-powered SQL injection detector built with TensorFlow + Scapy + Flask. Real-time packet inspection, model accuracy 100%, TensorFlow 2.21.0.
+**SnortML** – ML-powered SQL injection detector built with TensorFlow + Scapy + Flask. Real-time packet inspection, TensorFlow 2.21.0. Evaluation is being re-run on live traffic; the original results came from a synthetic dataset.
 
 Both tools are publicly available on GitHub: [ilielucianno](https://github.com/ilielucianno)
 
@@ -169,7 +169,7 @@ office-network-infrastructure/
 ├── reports/               # Weekly progress reports
 ├── setup-guides/          # Step-by-step setup guides
 ├── CHEATSHEET.md          # Daily operations and troubleshooting
-├── COMPLIANCE.md          # GDPR / SOC 2 / ISO 27001 compliance
+├── COMPLIANCE.md          # GDPR / ISO 27001-aligned compliance
 ├── PENDING-TASKS.md       # Ongoing improvements
 └── RESPONSIBILITIES.md    # Role definitions
 ```
@@ -253,7 +253,7 @@ git clone https://github.com/ilielucianno/office-network-infrastructure.git
 
 ## Future Improvements
 
-- Complete Security+ and Network+ certifications (in progress)
+- Complete CompTIA Network+ certification (in preparation)
 - Offsite backups (Google Drive) — optional
 - Complete Shuffle SOAR automated workflows
 - Disaster recovery fully documented (tested May 2026, RTO < 1h)
@@ -262,8 +262,8 @@ git clone https://github.com/ilielucianno/office-network-infrastructure.git
 
 ## Author
 
-**Ilie Lucian** – Technical Department Manager (10+ years)  
-SEC1 Certified (TryHackMe) · Currently: Security+ & Network+  
+**Ilie Lucian** – Technical Department Manager (IT & Security), 10 years with the company  
+TryHackMe SEC0 + SEC1 · Currently: CompTIA Network+  
 GitHub: [ilielucianno](https://github.com/ilielucianno)
 
 Built from real-world experience managing network security, servers, and IT infrastructure — without a formal degree. This repository is a living document of my cybersecurity journey.
