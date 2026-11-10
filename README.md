@@ -1,11 +1,13 @@
 
 **Secure office network with VLAN segmentation, WireGuard VPN, and self-hosted Odoo HR system.**
 
+> **Status:** this network ran in production until the company closed on 1 November 2026. The repository is kept as documentation of what was built and operated.
+
 ---
 
 ## Overview
 
-This project documents a complete, production-ready office network for a small company (3 HR/accounting offices + a fluctuating remote support team: about 15 agents in recent years, up to 40 per shift earlier). It implements enterprise-grade security on a budget of ~€1,600.
+This project documents the complete office network I designed and ran for a small company (3 HR/accounting offices + a fluctuating remote support team: about 15 agents in recent years, up to 40 per shift earlier). It implements enterprise-grade security on a budget of ~€1,600.
 
 - **VLAN isolation** – HR, Support, Server completely separated
 - **WireGuard VPN** – key-based, unique keys per user
@@ -222,7 +224,7 @@ git clone https://github.com/ilielucianno/office-network-infrastructure.git
 
 ---
 
-## Current System Status (May 2026)
+## System Status (last documented May 2026, before the company closed)
 
 | Component | Primary (Geekom A9 Max) | Backup (Intel N100) |
 |-----------|------------------------|---------------------|
@@ -262,8 +264,8 @@ git clone https://github.com/ilielucianno/office-network-infrastructure.git
 
 ## Author
 
-**Ilie Lucian** – Technical Department Manager (IT & Security), 10 years with the company  
-TryHackMe SEC0 + SEC1 · Currently: CompTIA Network+  
+**Ilie Lucian** – Technical Department Manager (IT & Security), 2016–2026  
+TryHackMe SEC0 + SEC1 · Studying for CompTIA Network+  
 GitHub: [ilielucianno](https://github.com/ilielucianno)
 
 Built from real-world experience managing network security, servers, and IT infrastructure — without a formal degree. This repository is a living document of my cybersecurity journey.
@@ -274,4 +276,3 @@ Built from real-world experience managing network security, servers, and IT infr
 
 MIT License – free to use and adapt for your own infrastructure.
 
-*Last updated: May 2026*

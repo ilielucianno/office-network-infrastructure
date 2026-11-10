@@ -131,8 +131,8 @@ sudo systemctl status unattended-upgrades
 |----------|---------|-------------------|
 | Snort 3 | GPLv2 | ✅ Permitted for commercial use |
 | Wazuh SIEM | GPLv2 | ✅ Permitted for commercial use |
-| DarkGhost NDR | Proprietary (internal development) | ✅ Company-owned code |
-| SnortML | Proprietary (internal development) | ✅ Company-owned code |
+| DarkGhost NDR | Developed in-house by the author | ✅ No third-party licence obligations |
+| SnortML | Developed in-house by the author (published on GitHub) | ✅ No third-party licence obligations |
 | Shuffle SOAR | Apache 2.0 | ✅ Permitted |
 | Fail2Ban | GPLv2 | ✅ Permitted |
 | auditd | GPLv2 | ✅ Permitted |
